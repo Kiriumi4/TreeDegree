@@ -18,6 +18,7 @@ while True:  # Event Loop
     print(event)
     print(values)
     butt=['Road','Grass','Walkway','Tram tracks']
+    buttKey=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-']
     buttNum=1
 
     if event == sg.WIN_CLOSED or event == 'Exit':
@@ -57,12 +58,13 @@ while True:  # Event Loop
        plt.savefig('square.png',transparent=True)
        wnd.window[f'-EDITSQUARE-'].update('square.png')
        wnd.window.refresh()
-    for i in butt:
+    for i in buttKey:
         if event==i:
               wnd.window[f'-EDITBUTTS{buttNum}-'].update(visible=True)
               for j in range(1,5):
                   if j!=buttNum:
                       wnd.window[f'-EDITBUTTS{j}-'].update(visible=False)
+                     
               wnd.window.refresh()
         buttNum+=1
     if event== 'Add':

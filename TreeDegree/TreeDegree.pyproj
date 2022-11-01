@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>4de02b64-86d2-4f03-8685-9b3412387ed0</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>functions.py</StartupFile>
+    <StartupFile>TreeDegree.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

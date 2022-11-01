@@ -41,14 +41,14 @@ layout2 = [
 layout3=[
     [sg.Column(
         [[sg.Text("Editing window",font = font_title,justification='c')],
-        [sg.Button('Road',pad=(0,0),font=font_btn)],
-        [sg.InputText(key='-EDITBUTTS1-',visible=False,font=font_text)],
-        [sg.Button('Grass',pad=(0,0),font=font_btn)],
-        [sg.InputText(key='-EDITBUTTS2-',visible=False,font=font_text)],
-        [sg.Button('Walkway',pad=(0,0),font=font_btn)],
-        [sg.InputText(key='-EDITBUTTS3-',visible=False,font=font_text)],
-        [sg.Button('Tram tracks',pad=(0,0),font=font_btn)],
-        [sg.InputText(key='-EDITBUTTS4-',visible=False,font=font_text)],
+        [sg.Button('Road',pad=(0,0),key='-EDITBTN1-',font=font_btn)],
+        [sg.InputText(key='-EDITBUTTS1-',visible=False,font=font_text,size=(20,10))],
+        [sg.Button('Grass',pad=(0,0),key='-EDITBTN2-',font=font_btn)],
+        [sg.InputText(key='-EDITBUTTS2-',visible=False,font=font_text,size=(20,10))],
+        [sg.Button('Walkway',pad=(0,0),key='-EDITBTN3-',font=font_btn)],
+        [sg.InputText(key='-EDITBUTTS3-',visible=False,font=font_text,size=(20,10))],
+        [sg.Button('Tram tracks',pad=(0,0),key='-EDITBTN4-',font=font_btn)],
+        [sg.InputText(key='-EDITBUTTS4-',visible=False,font=font_text,size=(20,10))],
         [sg.Button('Add',font=font_btn),sg.Button('Delete',font=font_btn)]]
         ),
         sg.VSeperator(),

@@ -1,3 +1,4 @@
+from tempfile import tempdir
 import numpy as np
 
 temp=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','V','W','X','Y','Z']
@@ -56,7 +57,9 @@ def algorithm(tab):
                  #print(tab[i][j])
         return 0
 
-def doGrass(tab,i,j):
+
+    # ZMIENIC DLA KRAWEDZI DANYCH DZIALA DLA POLA W SRODKU
+def doGrass(tab,i,j):      
     grass=np.array([[i,j]])
     temp=i
     temp2=j
@@ -95,21 +98,45 @@ def checkFound(coord,coordTab):
 
 # funcja canTree
 # sprawdzanie mo¿liwoœci w³o¿enia drzewa w dane miejsce
-# (area-tabela koordynatów mo¿liwego miejsca, size- wielkosc korony [m],placement  pivot wzglêdem krawêdzi (koordynaty))
+# (area-tabela koordynatów mo¿liwego miejsca, size- wielkosc korony [m], offset - odleg³osc wzglêdem krawêdzi (koordynaty))
+#offset ustalany w samym algorytmie w zale¿nosci od krawedzi s¹siaduj¹cych, braku mozliwosci postawienia drzewa badz liczby losowej ustalajacej ksztalt
 
-def canTree(area,size,placement): 
-    x=placement[0]
-    y=placement[1]
-    for i in range(0, area):
+def canTree(area,size,offset): 
+    x=offset[0]
+    y=offset[1]
+    areaStart1=10000000
+    areaStart2=10000000
+    placeable=0
+    tempi=0
+    for i in range (0,area.shape[0]):
+        if area[i][0]< areaStart1 and area[i][1]< areaStart2:
+            areaStart1=area[i][0]
+            areaStart2=area[i][1]
+
+    print(areaStart1, areaStart2)
+    for i in range(0,size*size):
+        for j in area:
+            if j[0]==areaStart1+x+tempi and j[1]==areaStart2+y+i%size:    
+                #print(areaStart1+x+i%size,",", areaStart2+y+tempi)
+                placeable+=1
+                
+        if i%size==0 and i>=size:
+            tempi+=1
+
+
+            
+    if placeable==size*size:
+        print("The tree is put")
         return True
-    return False
+    else:
+        return False
 
-
-tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,0,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])
+tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])
 #tab1=np.resize(tab1,(4,2))
 print(tab1)  #tab[wiersz][kolumna]
 print(doGrass(tab1,2,1))
-
+a=doGrass(tab1,2,1)
+print(canTree(a,3,(0,1)))
 #coordTab=np.array([[2,3]])
 #print(checkFound((2,3),coordTab))
 #print(algorithm(tab))
