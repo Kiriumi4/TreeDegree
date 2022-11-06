@@ -2,16 +2,18 @@ from optparse import Values
 import PySimpleGUI as sg
 import window as wnd
 import functions as func
+from window import num_buttons_i
+from window import num_buttons_j
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 
-cmap = colors.ListedColormap(['0.5','0.1','lightgreen','0.8','brown'])
-bounds=[0,1,2,3,4,5]
+cmap = colors.ListedColormap(['0.5','0.1','lightgreen','0.8','brown','green'])
+bounds=[0,1,2,3,4,5,6]
 norm = colors.BoundaryNorm(bounds, cmap.N)
-
-
-
+c=(0,0)
+rembTerr=0
+colorButn=['grey35','grey25','lightgreen','grey70','brown','green']
 
 while True:  # Event Loop
     event, values = wnd.window.read()
@@ -20,10 +22,12 @@ while True:  # Event Loop
     butt=['Road','Grass','Walkway','Tram tracks']
     buttKey=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-']
     buttNum=1
+    
 
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event=='New':
+
        wnd.window[f'-COL1-'].update(visible=True)
        wnd.window[f'-COL2-'].update(visible=False)
        wnd.window[f'-COL3-'].update(visible=False)
@@ -33,19 +37,19 @@ while True:  # Event Loop
     if event == 'Ok':
        c=[int(i) for i in values['-OUTSIZE-'].split() if i.isdigit()]
        buildArr=np.zeros((c[0],c[1])) #Array to hold all building data
-       #a=c[0]
-       #b=c[1]
-       #text=""
-       #for x in range(a):
-       #    text+=b*"o "
-       #    text+="\n" 
+       f=open('variables.txt','w')
+       f.write(str(c[0])+"\n"+str(c[0]))
+       f.close()
        wnd.window[f'-COL1-'].update(visible=False)
        wnd.window[f'-COL2-'].update(visible=True)
        wnd.window[f'-INSIZE-'].update(values['-OUTSIZE-'])
-       #wnd.window[f'-SQUARE-'].update(text)
        plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
        plt.savefig('square.png',transparent=True)
        wnd.window[f'-SQUARE-'].update('square.png')
+       for i in range(0,c[0]):
+           for j in range(0,c[1]):
+               if event==(i,j):
+                    wnd.window[(i,j)].update(text='  ')
        wnd.window.refresh()
        
     if event == 'Edit':
@@ -53,20 +57,32 @@ while True:  # Event Loop
        wnd.window[f'-COL2-'].update(visible=False)
        wnd.window[f'-COL3-'].update(visible=True)
        wnd.window[f'-COL4-'].update(visible=False)
-       #wnd.window[f'-EDITSQUARE-'].update(text)
        plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
        plt.savefig('square.png',transparent=True)
-       wnd.window[f'-EDITSQUARE-'].update('square.png')
+
+       for i in range(0,c[0]):
+            for j in range(0,c[1]):
+                wnd.window[(i,j)].update(visible=True)
        wnd.window.refresh()
+
     for i in buttKey:
         if event==i:
               wnd.window[f'-EDITBUTTS{buttNum}-'].update(visible=True)
               for j in range(1,5):
                   if j!=buttNum:
-                      wnd.window[f'-EDITBUTTS{j}-'].update(visible=False)
-                     
+                      wnd.window[f'-EDITBUTTS{j}-'].update(visible=False)    
               wnd.window.refresh()
+              rembTerr=buttNum
+
         buttNum+=1
+
+    for i in range(0,c[0]):
+            for j in range(0,c[1]):
+                if event==(i,j):
+                    #wnd.window[(i,j)].update(text=' '+str(rembTerr)+' ')
+                    wnd.window[(i,j)].update(button_color=colorButn[rembTerr])
+                    buildArr[i][j]=rembTerr
+
     if event== 'Add':
         for i in range(1,5):
             if values[f'-EDITBUTTS{i}-']!='':
@@ -97,12 +113,13 @@ while True:  # Event Loop
                     x,y=func.selectQuad(values[f'-EDITBUTTS{i}-'],c[0],c[1])
                     buildArr[x][y]=i
             wnd.window[f'-EDITBUTTS{i}-'].update('')
+
         plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
         plt.savefig('square.png',transparent=True)
-        wnd.window[f'-EDITSQUARE-'].update('square.png')
+        #wnd.window[f'-EDITSQUARE-'].update('square.png')
         #wnd.window[f'-EDITSQUARE-'].update(str(buildArr))
         wnd.window.refresh()
-        func.algorithm(buildArr)
+        
     if event== 'Delete':
         for i in range(1,5):
             if values[f'-EDITBUTTS{i}-']!='':
@@ -135,16 +152,27 @@ while True:  # Event Loop
             wnd.window[f'-EDITBUTTS{i}-'].update('')
         plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
         plt.savefig('square.png',transparent=True)
-        wnd.window[f'-EDITSQUARE-'].update('square.png')
+        #wnd.window[f'-EDITSQUARE-'].update('square.png')
         #wnd.window[f'-EDITSQUARE-'].update(str(buildArr))
         wnd.window.refresh()
+        rembTerr=0
     if event=='Compute':
         wnd.window[f'-COL1-'].update(visible=False)
         wnd.window[f'-COL2-'].update(visible=False)
         wnd.window[f'-COL3-'].update(visible=False)
         wnd.window[f'-COL4-'].update(visible=True)
+        plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
+        plt.savefig('square.png',transparent=True)
         wnd.window[f'-BUILDSQUARE-'].update('square.png')
         wnd.window.refresh()
+
+    if event=='Start building':
+        func.algorithm(buildArr,0)
+        plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
+        plt.savefig('square.png',transparent=True)
+        wnd.window[f'-BUILDSQUARE-'].update('square.png')
+        wnd.window.refresh()
+
 
      
 wnd.window.close()
