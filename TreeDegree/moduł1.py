@@ -2,6 +2,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 from PIL import Image
+
+####### Modul zawiera testy innych funkcji nie jest uzywany w programie wlasciwym!!!
+
+
+
 #buildArr=np.zeros((10,10)) #Array to hold all building data
 
 #cmap = colors.ListedColormap(['0.5','0.1','lightgreen','0.8','brown'])
