@@ -37,60 +37,63 @@ def selectQuad(pick, sizeX, sizeY):
 def algorithm(tab,option):
         a=tab.shape # size of array
         G=np.array([[0,0]])
-        road=np.array([0,0])
-        tram=np.array([0,0])
-        walk=np.array([0,0])
+        b=0
         for i in range(0,a[0]):
              for j in range(0,a[1]):
                  if tab[i][j]==1:
-                     print("road")
+                     #print("road")
+                     b=1
                  elif tab[i][j]==4:
-                     print("tram")
+                     #print("tram")
+                     b=1
                  elif tab[i][j]==3:
-                     print("walk")
-                 elif tab[i][j]==2:
-                     print("grass")
-                     if not checkFound((i,j),G):
-                         G=doGrass(tab,i,j)
-                     size=3
-                     offset=([0,1])
+                     #print("walk")
+                     b=1    
+                 elif tab[i][j]==2 and not checkFound((i,j),G):
+                     #print("aaaa",i,j)
+                     G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
+                     size=2
+                     offset=([0,1]) #ustalone wedlug najblizszej krawedzi
                      temp=0
-                     while(temp<a[1]/size):
-                        if canTree(G,size,offset):
-                             x,y=canTree(G,size,offset)
+                     while(temp<len(G)/size):
+                        if canTree(G,tab,size,offset):
+                             x,y=canTree(G,tab,size,offset)
+                             print('x,y:',x,y)
                              putTree(tab,size,(x,y))
-                        offset[1]+=3
+                             offset[1]+=size   
                         offset[1]+=1
                         temp+=1
+
                  elif tab[i][j]==0:
-                     print("0")
+                     b=1
               
                  #print(tab[i][j])
         return tab
 
 
     #ZMIENIC DLA KRAWEDZI DANYCH DZIALA DLA POLA W SRODKU
-def doGrass(tab,i,j):      
+    #wyszukanie kszta³tu (wszytkich dotykajacych sie punktow o danym typie np. trawa)
+def findPlaneOfType(tab,i,j,typ):      
     grass=np.array([[i,j]])
     temp=i
     temp2=j
     while(True):
-        if tab[temp+1][temp2]==2 and checkFound((temp+1,temp2),grass)==False:
+        if tab[temp+1][temp2]==typ and checkFound((temp+1,temp2),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp+1
             grass[grass.shape[0]-1][1]=temp2
             temp+=1
-        elif tab[temp][temp2+1]==2 and checkFound((temp,temp2+1),grass)==False:
+        elif tab[temp][temp2+1]==typ and checkFound((temp,temp2+1),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp
             grass[grass.shape[0]-1][1]=temp2+1
             temp2+=1
-        elif tab[temp-1][temp2]==2 and checkFound((temp-1,temp2),grass)==False:
+        elif tab[temp-1][temp2]==typ and checkFound((temp-1,temp2),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp-1
             grass[grass.shape[0]-1][1]=temp2
             temp-=1
-        elif tab[temp][temp2-1]==2 and checkFound((temp,temp2-1),grass)==False:
+        elif tab[temp][temp2-1]==typ and checkFound((temp,temp2-1),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp
             grass[grass.shape[0]-1][1]=temp2-1
@@ -111,53 +114,70 @@ def checkAround(tab,grass):
 
     return True
 
+
+#okreslamy odleglosc od znaku drogowego (zalozymy ze drzewo nie moze stac 1 m kolo znaku znakiem)
+#zmienic warunek przy krawedzi (dla trawy o <3 m kolo krawedzi program sie wywala)
+def isSign(treeCoord, tab, size):
+    for i in range(1,size+3):
+        if tab[treeCoord[0]][treeCoord[1]+i]==5:
+        
+            return False
+    if tab[treeCoord[0]+1][treeCoord[1]]==5 or tab[treeCoord[0]-1][treeCoord[1]]==5 or tab[treeCoord[0]][treeCoord[1]-1]==5:
+        return False
+    else:
+        return True
+
 # funcja canTree
 # sprawdzanie mozliwosci wlozenia drzewa w dane miejsce
 # (area-tabela koordynatow mozliwego miejsca, size- wielkosc korony [m], offset - odleglosc wzgledem krawedzi (koordynaty))
 #offset ustalany w samym algorytmie w zaleznosci od krawedzi sasiadujacych, braku mozliwosci postawienia drzewa badz liczby losowej ustalajacej ksztalt
 
-def canTree(area,size,offset): 
+def canTree(area,tab,size,offset): 
     x=offset[0]
     y=offset[1]
     areaStart1=10000000
     areaStart2=10000000
     placeable=0
     tempi=0
+
     for i in range (0,area.shape[0]):
         if area[i][0]< areaStart1 and area[i][1]< areaStart2:
             areaStart1=area[i][0]+x
             areaStart2=area[i][1]+y
 
-    print(areaStart1, areaStart2)
+    print("a1,a2",areaStart1, areaStart2)
     for i in range(0,size*size):
         for j in area:
-            if j[0]==areaStart1+tempi and j[1]==areaStart2+i%size:    
-                #print(areaStart1+x+i%size,",", areaStart2+y+tempi)
+            print('j',j)
+            if j[0]==areaStart1+tempi and j[1]==areaStart2+i%size :    
                 placeable+=1
+                print("place:",placeable)
                 
         if i%size==0 and i>=size:
             tempi+=1
        
-    if placeable==size*size:
-        print("The tree is put")
+    if placeable==size*size and isSign((areaStart1, areaStart2),tab,size):
+        print("Can put Tree")
         return areaStart1,areaStart2
     else:
         return False
 
 def putTree(tab,size,start):
-
+    
     for i in range(0,size):
            for j in range(0,size):
                 tab[start[0]+i][start[1]+j]=6
+
     return tab
 
-tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])
-#tab1=np.resize(tab1,(4,2))
-print(tab1)  #tab[wiersz][kolumna]
-print(doGrass(tab1,2,1))
-a=doGrass(tab1,2,1)
-print(canTree(a,3,(0,1)))
-print(algorithm(tab1,0))
+
+#tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])
+##tab1=np.resize(tab1,(4,2))
+#print(tab1)  #tab[wiersz][kolumna]
+#print(doGrass(tab1,2,1))
+#a=doGrass(tab1,2,1)
+#print(canTree(a,3,(0,1)))
+#print(algorithm(tab1,0))
 #coordTab=np.array([[2,3]])
 #print(checkFound((2,3),coordTab))
 #print(algorithm(tab))
