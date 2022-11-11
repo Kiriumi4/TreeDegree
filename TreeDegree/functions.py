@@ -1,3 +1,5 @@
+from re import X
+from turtle import xcor
 import numpy as np
 
 temp=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','V','W','X','Y','Z']
@@ -52,16 +54,19 @@ def algorithm(tab,option):
                  elif tab[i][j]==2 and not checkFound((i,j),G):
                      #print("aaaa",i,j)
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
-                     size=2
+                     size=3
                      offset=([0,1]) #ustalone wedlug najblizszej krawedzi
+                     x0,y0=findStart(G)
                      temp=0
-                     while(temp<len(G)/size):
-                        if canTree(G,tab,size,offset):
-                             x,y=canTree(G,tab,size,offset)
+                     while(temp<=len(G)):
+                        
+                        if canTree(G,tab,size,(x0+offset[0],y0+offset[1])):
+                             x,y=canTree(G,tab,size,(x0+offset[0],y0+offset[1]))
                              print('x,y:',x,y)
-                             putTree(tab,size,(x,y))
-                             offset[1]+=size   
+                             print('x0,y0:',x0,y0)
+                             tab,G=putTree(tab,size,(x,y),G)  
                         offset[1]+=1
+                        offset[0]+=0
                         temp+=1
 
                  elif tab[i][j]==0:
@@ -131,27 +136,37 @@ def isSign(treeCoord, tab, size):
 # sprawdzanie mozliwosci wlozenia drzewa w dane miejsce
 # (area-tabela koordynatow mozliwego miejsca, size- wielkosc korony [m], offset - odleglosc wzgledem krawedzi (koordynaty))
 #offset ustalany w samym algorytmie w zaleznosci od krawedzi sasiadujacych, braku mozliwosci postawienia drzewa badz liczby losowej ustalajacej ksztalt
+#zalozmy areastart1/areastar2 jako pien drzewa //na pozniej - jeszcze nie zaimplementowane
 
-def canTree(area,tab,size,offset): 
-    x=offset[0]
-    y=offset[1]
+def findStart(area):
     areaStart1=10000000
     areaStart2=10000000
+    for i in range (0,area.shape[0]):
+        areaStart1=min(areaStart1,area[i][0])
+
+    for i in range (0,area.shape[0]):
+        if area[i][0]==areaStart1:
+           areaStart2 = min(areaStart2,area[i][1])
+
+    return areaStart1,areaStart2
+
+
+
+def canTree(area,tab,size,areaCoords): 
+  
     placeable=0
     tempi=0
 
-    for i in range (0,area.shape[0]):
-        if area[i][0]< areaStart1 and area[i][1]< areaStart2:
-            areaStart1=area[i][0]+x
-            areaStart2=area[i][1]+y
+
+    areaStart1=areaCoords[0]
+    areaStart2=areaCoords[1]
 
     print("a1,a2",areaStart1, areaStart2)
     for i in range(0,size*size):
         for j in area:
-            print('j',j)
-            if j[0]==areaStart1+tempi and j[1]==areaStart2+i%size :    
+            if j[0]==areaStart1+tempi and j[1]==areaStart2+i%size:    
                 placeable+=1
-                print("place:",placeable)
+                
                 
         if i%size==0 and i>=size:
             tempi+=1
@@ -162,13 +177,20 @@ def canTree(area,tab,size,offset):
     else:
         return False
 
-def putTree(tab,size,start):
+def putTree(tab,size,start,G):
     
     for i in range(0,size):
            for j in range(0,size):
                 tab[start[0]+i][start[1]+j]=6
+                for count,value in enumerate(G):
 
-    return tab
+                        if value[0]==start[0]+i and value[1]==start[1]+j:
+                             print(G[count])
+                             G=np.delete(G, count,axis=0)
+                            
+ 
+
+    return tab,G
 
 
 #tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])
