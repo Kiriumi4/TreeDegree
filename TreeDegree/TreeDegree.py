@@ -63,6 +63,7 @@ while True:  # Event Loop
             wnd.window[f'-COL2-'].update(visible=False)
             wnd.window[f'-COL3-'].update(visible=True)
             wnd.window[f'-COL4-'].update(visible=False)
+            
             plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
             plt.savefig('square.png',transparent=True)
             print(buildArr)

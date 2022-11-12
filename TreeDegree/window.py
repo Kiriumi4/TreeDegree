@@ -66,7 +66,7 @@ layout3=[
         sg.VSeperator(),
         #sg.Image('square.png',key='-EDITSQUARE-'),
         sg.Column(
-        [[sg.Button("   ", key=(j, i),pad=(0,0),visible=False) for i in range(num_buttons_i)] for j in range(num_buttons_j)])
+        [[sg.Button("    ", key=(j, i),pad=(0,0),visible=False,size=(2,1)) for i in range(num_buttons_i)] for j in range(num_buttons_j)],key='-COLIN1-')
     ]
 ]
 

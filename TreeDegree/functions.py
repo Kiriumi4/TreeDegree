@@ -55,16 +55,15 @@ def algorithm(tab,option):
                      #print("aaaa",i,j)
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
                      size=3
-                     offset=([0,1]) #ustalone wedlug najblizszej krawedzi
+                     offset=([0,0]) #ustalone wedlug najblizszej krawedzi
                      x0,y0=findStart(G)
+                     blacklist=checkAround(tab,G)
                      temp=0
                      while(temp<=len(G)):
-                        
-                        if canTree(G,tab,size,(x0+offset[0],y0+offset[1])):
+                        if canTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
                              x,y=canTree(G,tab,size,(x0+offset[0],y0+offset[1]))
-                             print('x,y:',x,y)
-                             print('x0,y0:',x0,y0)
                              tab,G=putTree(tab,size,(x,y),G)  
+                             offset[1]+=3
                         offset[1]+=1
                         offset[0]+=0
                         temp+=1
@@ -76,29 +75,31 @@ def algorithm(tab,option):
         return tab
 
 
-    #ZMIENIC DLA KRAWEDZI DANYCH DZIALA DLA POLA W SRODKU
-    #wyszukanie kszta³tu (wszytkich dotykajacych sie punktow o danym typie np. trawa)
+   
+    #wyszukanie ksztaltu (wszytkich dotykajacych sie punktow o danym typie np. trawa)
 def findPlaneOfType(tab,i,j,typ):      
     grass=np.array([[i,j]])
     temp=i
     temp2=j
+    #print(len(tab))
+    #print(len(tab[0]))
     while(True):
-        if tab[temp+1][temp2]==typ and checkFound((temp+1,temp2),grass)==False:
+        if temp+1<len(tab) and tab[temp+1][temp2]==typ and checkFound((temp+1,temp2),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp+1
             grass[grass.shape[0]-1][1]=temp2
             temp+=1
-        elif tab[temp][temp2+1]==typ and checkFound((temp,temp2+1),grass)==False:
+        elif temp2+1<len(tab[0]) and tab[temp][temp2+1]==typ and checkFound((temp,temp2+1),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp
             grass[grass.shape[0]-1][1]=temp2+1
             temp2+=1
-        elif tab[temp-1][temp2]==typ and checkFound((temp-1,temp2),grass)==False:
+        elif temp>1 and tab[temp-1][temp2]==typ and checkFound((temp-1,temp2),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp-1
             grass[grass.shape[0]-1][1]=temp2
             temp-=1
-        elif tab[temp][temp2-1]==typ and checkFound((temp,temp2-1),grass)==False:
+        elif temp2>1 and tab[temp][temp2-1]==typ and checkFound((temp,temp2-1),grass)==False:
             grass=np.resize(grass,(grass.shape[0]+1,2))
             grass[grass.shape[0]-1][0]=temp
             grass[grass.shape[0]-1][1]=temp2-1
@@ -115,19 +116,49 @@ def checkFound(coord,coordTab):
             return True
     return False
 
-def checkAround(tab,grass):
+#def checkFoundWhole(coordTab1,coordTab2):
 
-    return True
+#    for i in range (0,coordTab2.shape[0]):
+#        for i in range (0,coordTab1.shape[0]):
+#            if coordTab2[0]==coordTab1[i][0] and coordTab1[1]==coordTab2[i][1]:
+#                return True
+#    return False
+#nu nu nu inaczej sprawdzamy szyskie coordynaty
+def checkAround(tab,grass):
+    blacklist=np.array([])
+
+    for g in grass:
+        if tab[g[0]-1][g[1]]==1: #road
+            for i in range(3):
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]+i
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+        if tab[g[0]][g[1]-1]==1: #road
+            for i in range(3):
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]+i
+        if tab[g[0]+1][g[1]]==1: #road
+            for i in range(3):
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]-i
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+        if tab[g[0]][g[1]+1]==1: #road
+            for i in range(3):
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]-i
+    return blacklist
 
 
 #okreslamy odleglosc od znaku drogowego (zalozymy ze drzewo nie moze stac 1 m kolo znaku znakiem)
 #zmienic warunek przy krawedzi (dla trawy o <3 m kolo krawedzi program sie wywala)
 def isSign(treeCoord, tab, size):
     for i in range(1,size+3):
-        if tab[treeCoord[0]][treeCoord[1]+i]==5:
+        if treeCoord[1]+i<len(tab[0]) and tab[treeCoord[0]][treeCoord[1]+i]==5:
         
             return False
-    if tab[treeCoord[0]+1][treeCoord[1]]==5 or tab[treeCoord[0]-1][treeCoord[1]]==5 or tab[treeCoord[0]][treeCoord[1]-1]==5:
+    if (treeCoord[0]+1<len(tab) and tab[treeCoord[0]+1][treeCoord[1]]==5) or (treeCoord[0]-1<0 and tab[treeCoord[0]-1][treeCoord[1]]==5 ) or (treeCoord[1]-1<0 and tab[treeCoord[0]][treeCoord[1]-1]==5):
         return False
     else:
         return True
@@ -157,7 +188,7 @@ def canTree(area,tab,size,areaCoords):
     placeable=0
     tempi=0
 
-
+    print(area)
     areaStart1=areaCoords[0]
     areaStart2=areaCoords[1]
 

@@ -26,18 +26,38 @@ owo= np.array([[1,2],[1,3],[2,2],[2,3],[2,4],[3,2],[3,3],[3,4],[3,5]])
 #print(owo)
 #for opt in enumerate(owo):
 #    print(opt[0])
-print(owo)
+#print(owo)
+#print(len(owo))
+#print(len(owo[0]))
+#print(len(owo[1]))
 
-for i,value in enumerate(owo):
-    #print(i)
-  
-    if value[0]==1 and value[1]==3:
-         #print('a')
-         owo=np.delete(owo, i,axis=0)
+#for i,value in enumerate(owo):
+#    print(i,value)
 
-print(owo)
+#for i in owo:
+#    print(i) 
+#    if value[0]==1 and value[1]==3:
+#         #print('a')
+#         owo=np.delete(owo, i,axis=0)
 
+#print(owo)
 
+#hemlo=np.array([[1,3]])
+#print(hemlo)
+#print(len(hemlo))
+#hemlo=np.resize(hemlo,(len(hemlo)+1,2))
+#hemlo[len(hemlo)-1][len(hemlo[0])-2]=1
+#hemlo[len(hemlo)-1][len(hemlo[0])-1]=2
+#print(hemlo)
+g=[1,1]
+blacklist=np.array([])
+print(blacklist)
+for i in range(3):
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]+i
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+                print(i,blacklist)
+print(blacklist)
 #print(max(map(max, owo[0:2])))
 #print(max(map(max, owo[3:5])))
 #print(max(map(max, owo[6:9])))
