@@ -59,13 +59,20 @@ def algorithm(tab,option):
                      x0,y0=findStart(G)
                      blacklist=checkAround(tab,G)
                      temp=0
-                     while(temp<=len(G)):
+                     temp2=G[:,0]
+                     print(temp2)
+                     while(temp<len(G)):
                         if canTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
                              x,y=canTree(G,tab,size,(x0+offset[0],y0+offset[1]))
+                             print(x0+offset[0],y0+offset[1])
                              tab,G=putTree(tab,size,(x,y),G)  
-                             offset[1]+=3
+                             offset[1]+=size
                         offset[1]+=1
-                        offset[0]+=0
+                        print('temp:',temp,'temp2:',temp2,'G0:',G[:,0][temp])
+                        
+                        if G[:,0][temp]!=temp2:
+                            temp2=G[:,0][temp]
+                            offset[0]+=1
                         temp+=1
 
                  elif tab[i][j]==0:
@@ -106,7 +113,8 @@ def findPlaneOfType(tab,i,j,typ):
             temp2-=1
         else:
             break
-        
+    grass=grass[grass[:,1].argsort()]
+    grass=grass[grass[:,0].argsort()]   
     return grass
 
 def checkFound(coord,coordTab):
@@ -116,13 +124,7 @@ def checkFound(coord,coordTab):
             return True
     return False
 
-#def checkFoundWhole(coordTab1,coordTab2):
 
-#    for i in range (0,coordTab2.shape[0]):
-#        for i in range (0,coordTab1.shape[0]):
-#            if coordTab2[0]==coordTab1[i][0] and coordTab1[1]==coordTab2[i][1]:
-#                return True
-#    return False
 #nu nu nu inaczej sprawdzamy szyskie coordynaty
 def checkAround(tab,grass):
     blacklist=np.array([])
@@ -188,11 +190,11 @@ def canTree(area,tab,size,areaCoords):
     placeable=0
     tempi=0
 
-    print(area)
+    #print(area)
     areaStart1=areaCoords[0]
     areaStart2=areaCoords[1]
 
-    print("a1,a2",areaStart1, areaStart2)
+    #print("a1,a2",areaStart1, areaStart2)
     for i in range(0,size*size):
         for j in area:
             if j[0]==areaStart1+tempi and j[1]==areaStart2+i%size:    
@@ -216,7 +218,7 @@ def putTree(tab,size,start,G):
                 for count,value in enumerate(G):
 
                         if value[0]==start[0]+i and value[1]==start[1]+j:
-                             print(G[count])
+                             #print(G[count])
                              G=np.delete(G, count,axis=0)
                             
  

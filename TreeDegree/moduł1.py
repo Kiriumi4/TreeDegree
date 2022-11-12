@@ -21,7 +21,8 @@ from PIL import Image
 #plt.savefig('square.png',transparent=True)
 #plt.show()
 
-owo= np.array([[1,2],[1,3],[2,2],[2,3],[2,4],[3,2],[3,3],[3,4],[3,5]])
+owo= np.array([[3,2],[1,3],[2,2],[2,3],[2,4],[3,8],[3,3],[3,4],[3,5]])
+owo1= [[3,2],[1,3],[2,2],[2,3],[2,4],[3,8],[3,3],[3,4],[3,5]]
 #owo=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-','-EDITBTN5-']
 #print(owo)
 #for opt in enumerate(owo):
@@ -30,6 +31,19 @@ owo= np.array([[1,2],[1,3],[2,2],[2,3],[2,4],[3,2],[3,3],[3,4],[3,5]])
 #print(len(owo))
 #print(len(owo[0]))
 #print(len(owo[1]))
+
+#owo1.sort(key=lambda row:(row[0],row[1]),reverse=False)
+#print(owo1)
+##owo=owo[owo[:,0].argsort()]
+#owo=owo[owo[:,1].argsort()]
+#owo=owo[owo[:,0].argsort()]
+#ind=np.lexsort((owo[:,0],owo[:,1]))
+#owo[ind]
+#ind = owo[:,1].argsort(kind='stable')
+#owo[ind]
+print(owo)
+print(owo[:,0])
+print(np.count_nonzero(owo[:len(owo)-1][0] == 3))
 
 #for i,value in enumerate(owo):
 #    print(i,value)
@@ -49,15 +63,15 @@ owo= np.array([[1,2],[1,3],[2,2],[2,3],[2,4],[3,2],[3,3],[3,4],[3,5]])
 #hemlo[len(hemlo)-1][len(hemlo[0])-2]=1
 #hemlo[len(hemlo)-1][len(hemlo[0])-1]=2
 #print(hemlo)
-g=[1,1]
-blacklist=np.array([])
-print(blacklist)
-for i in range(3):
-                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
-                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]+i
-                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
-                print(i,blacklist)
-print(blacklist)
+#g=[1,1]
+#blacklist=np.array([])
+#print(blacklist)
+#for i in range(3):
+#                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+#                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]+i
+#                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+#                print(i,blacklist)
+#print(blacklist)
 #print(max(map(max, owo[0:2])))
 #print(max(map(max, owo[3:5])))
 #print(max(map(max, owo[6:9])))

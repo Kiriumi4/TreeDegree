@@ -17,8 +17,8 @@ colorButn=['grey35','grey25','lightgreen','grey70','brown','pink','green']
 
 while True:  # Event Loop
     event, values = wnd.window.read()
-    print(event)
-    print(values)
+    #print(event)
+    #print(values)
     butt=['Road','Grass','Walkway','Tram tracks','Sign']
     buttKey=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-','-EDITBTN5-']
     textboxKey=['-EDITTEXT1-','-EDITTEXT2-','-EDITTEXT3-','-EDITTEXT4-','-EDITTEXT5-']
@@ -136,8 +136,8 @@ while True:  # Event Loop
                     temp=values[f'-EDITTEXT{i}-'].find('-')
                     left=values[f'-EDITTEXT{i}-'][:temp]
                     right=values[f'-EDITTEXT{i}-'][temp+1:]
-                    print(left)
-                    print(right)
+                    #print(left)
+                    #print(right)
                     if func.selectQuad(left,c[0],c[1])==False or func.selectQuad(right,c[0],c[1])==False:
                         sg.Popup("Picked quadrant out of range")
                     else:
