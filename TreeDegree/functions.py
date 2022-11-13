@@ -70,9 +70,9 @@ def algorithm(tab,option):
                         offset[1]+=1
                         print('temp:',temp,'temp2:',temp2,'G0:',G[:,0][temp])
                         
-                        if G[:,0][temp]!=temp2:
-                            temp2=G[:,0][temp]
-                            offset[0]+=1
+                        #if G[:,0][temp]!=temp2:
+                        #    temp2=G[:,0][temp]
+                        #    offset[0]+=1
                         temp+=1
 
                  elif tab[i][j]==0:
