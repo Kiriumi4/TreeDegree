@@ -125,27 +125,27 @@ def checkFound(coord,coordTab):
     return False
 
 
-#nu nu nu inaczej sprawdzamy szyskie coordynaty
+#Sprawdzenie wszystkich koordynatow na nesw dla pola droga i dodanie do listy zabronionych pozycji trawy na 3m od drogi
 def checkAround(tab,grass):
     blacklist=np.array([])
 
     for g in grass:
-        if tab[g[0]-1][g[1]]==1: #road
+        if g[0]-1<0 and tab[g[0]-1][g[1]]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]+i
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
-        if tab[g[0]][g[1]-1]==1: #road
+        if g[1]-1<0 and tab[g[0]][g[1]-1]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]+i
-        if tab[g[0]+1][g[1]]==1: #road
+        if g[0]+1>len(tab) and tab[g[0]+1][g[1]]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]-i
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
-        if tab[g[0]][g[1]+1]==1: #road
+        if g[1]+1>len(tab[0]) and tab[g[0]][g[1]+1]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
@@ -165,11 +165,6 @@ def isSign(treeCoord, tab, size):
     else:
         return True
 
-# funcja canTree
-# sprawdzanie mozliwosci wlozenia drzewa w dane miejsce
-# (area-tabela koordynatow mozliwego miejsca, size- wielkosc korony [m], offset - odleglosc wzgledem krawedzi (koordynaty))
-#offset ustalany w samym algorytmie w zaleznosci od krawedzi sasiadujacych, braku mozliwosci postawienia drzewa badz liczby losowej ustalajacej ksztalt
-#zalozmy areastart1/areastar2 jako pien drzewa //na pozniej - jeszcze nie zaimplementowane
 
 def findStart(area):
     areaStart1=10000000
@@ -184,7 +179,13 @@ def findStart(area):
     return areaStart1,areaStart2
 
 
+# funcja canTree
+# sprawdzanie mozliwosci wlozenia drzewa w dane miejsce
+# (area-tabela koordynatow mozliwego miejsca, size- wielkosc korony [m], offset - odleglosc wzgledem krawedzi (koordynaty))
+#offset ustalany w samym algorytmie w zaleznosci od krawedzi sasiadujacych, braku mozliwosci postawienia drzewa badz liczby losowej ustalajacej ksztalt
+#zalozmy areastart1/areastar2 jako pien drzewa //na pozniej - jeszcze nie zaimplementowane
 
+#postarac sie zmienic na kolo i wg pnia 
 def canTree(area,tab,size,areaCoords): 
   
     placeable=0
@@ -210,6 +211,8 @@ def canTree(area,tab,size,areaCoords):
     else:
         return False
 
+#znalezienie koordynatow dla wyrysowania drzewa (zmienic na kolo i wg pnia a nie lisci)
+
 def putTree(tab,size,start,G):
     
     for i in range(0,size):
@@ -221,9 +224,9 @@ def putTree(tab,size,start,G):
                              #print(G[count])
                              G=np.delete(G, count,axis=0)
                             
- 
-
     return tab,G
+
+
 
 
 #tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])

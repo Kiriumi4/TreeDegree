@@ -45,6 +45,9 @@ print(owo)
 print(owo[:,0])
 print(np.count_nonzero(owo[:len(owo)-1][0] == 3))
 
+
+
+
 #for i,value in enumerate(owo):
 #    print(i,value)
 
