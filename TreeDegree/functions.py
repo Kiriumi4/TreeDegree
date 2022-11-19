@@ -62,8 +62,8 @@ def algorithm(tab,option):
                      temp2=G[:,0]
                      print(temp2)
                      while(temp<len(G)):
-                        if canTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
-                             x,y=canTree(G,tab,size,(x0+offset[0],y0+offset[1]))
+                        if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
+                             x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
                              print(x0+offset[0],y0+offset[1])
                              tab,G=putTree(tab,size,(x,y),G)  
                              offset[1]+=size
@@ -130,22 +130,22 @@ def checkAround(tab,grass):
     blacklist=np.array([])
 
     for g in grass:
-        if g[0]-1<0 and tab[g[0]-1][g[1]]==1: #road
+        if g[0]-1>0 and tab[g[0]-1][g[1]]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]+i
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
-        if g[1]-1<0 and tab[g[0]][g[1]-1]==1: #road
+        if g[1]-1>0 and tab[g[0]][g[1]-1]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]+i
-        if g[0]+1>len(tab) and tab[g[0]+1][g[1]]==1: #road
+        if g[0]+1<len(tab) and tab[g[0]+1][g[1]]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]-i
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
-        if g[1]+1>len(tab[0]) and tab[g[0]][g[1]+1]==1: #road
+        if g[1]+1<len(tab[0]) and tab[g[0]][g[1]+1]==1: #road
             for i in range(3):
                 blacklist=np.resize(blacklist,(len(blacklist)+1,2))
                 blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
@@ -184,9 +184,9 @@ def findStart(area):
 # (area-tabela koordynatow mozliwego miejsca, size- wielkosc korony [m], offset - odleglosc wzgledem krawedzi (koordynaty))
 #offset ustalany w samym algorytmie w zaleznosci od krawedzi sasiadujacych, braku mozliwosci postawienia drzewa badz liczby losowej ustalajacej ksztalt
 #zalozmy areastart1/areastar2 jako pien drzewa //na pozniej - jeszcze nie zaimplementowane
-
+# dla drzew niskich sprawdzanie czy cale drzewo zmiesci sie na trawie
 #postarac sie zmienic na kolo i wg pnia 
-def canTree(area,tab,size,areaCoords): 
+def canWholeTree(area,tab,size,areaCoords): 
   
     placeable=0
     tempi=0
@@ -226,7 +226,12 @@ def putTree(tab,size,start,G):
                             
     return tab,G
 
-
+def circle(data, center, radius, size):
+    for i in range(size):
+        for j in range(size):
+            if (i - center[0]) ** 2 + (j - center[1]) ** 2 <= radius ** 2:
+                data[i * size + j] = 6
+    return data
 
 
 #tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])

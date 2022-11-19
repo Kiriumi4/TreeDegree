@@ -1,7 +1,9 @@
+import math
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 from PIL import Image
+
 
 ####### Modul zawiera testy innych funkcji nie jest uzywany w programie wlasciwym!!!
 
@@ -78,3 +80,57 @@ print(np.count_nonzero(owo[:len(owo)-1][0] == 3))
 #print(max(map(max, owo[0:2])))
 #print(max(map(max, owo[3:5])))
 #print(max(map(max, owo[6:9])))
+#data="";
+size=11
+data=np.zeros((size,size))
+##data=""
+#print(data)
+#def circle(data, center,  size):
+#    radius=size/2+0.5
+#    offset=(center[0]-radius,center[1]-radius)
+#    for i in range(size):
+#        for j in range(size):
+#            x=i+offset[0]
+#            y=j+offset[1]
+
+#            print(x,y,radius)
+#            if x ** 2 + y ** 2 <= radius** 2:
+#                data=data+" x "
+#                print("yo")
+#            else:
+#                data=data+"   "
+#        data=data+"\n"
+
+        
+#    return data
+
+#data=circle(data,(int(size/2)+1,int(size/2)+1),size)
+
+#print(data)
+width, height = size, size
+a, b = int(size/2),int(size/2)
+r = int(size/2)
+data[a][b]=1
+for angle in range(0, 360, 5):
+    x = r * math.sin(math.radians(angle)) + a
+    y = r * math.cos(math.radians(angle)) + b
+    data[int(round(y))][int(round(x))] = 1
+ #nie dziala v
+def fill_circle(grid):
+    for r in grid:  # For each row
+        j1 = None  # left endpoint
+        j2 = None  # right endpoint
+        for j, v in enumerate(r):
+            if v == 1 and j1 is None:
+                j1 = j
+                continue
+            if v == 1 and j2 is None:
+                j2 = j
+                break
+        else:  # Did not find j1 AND j2
+            continue
+        for j in range(j1, j2):  # Fill all points between
+            r[j] = 1
+fill_circle(data)
+print(data)
+
