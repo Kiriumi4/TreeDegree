@@ -1,7 +1,10 @@
+from array import typecodes
+from multiprocessing import Value
 from pydoc import visiblename
 import PySimpleGUI as sg
 import functions as func
 import linecache
+import numpy as np
 
 title="GUI"
 fsize=10
@@ -90,9 +93,11 @@ layout4=[
 ]
 
 layout=[
-    [sg.Column([[sg.Button('New',font=font_menu,pad=(0,0),size=btn_size_menu),
-                 sg.Button('Edit',font=font_menu,pad=(0,0),size=btn_size_menu),
+    [sg.Column([[sg.Button('New',font=font_menu,pad=(1,0),size=btn_size_menu),
+                 sg.Button('Open',font=font_menu,pad=(0,0),size=btn_size_menu),
+                 sg.Button('Edit',font=font_menu,pad=(1,0),size=btn_size_menu),
                  sg.Button('Compute',font=font_menu,pad=(0,0),size=btn_size_menu),
+                 sg.Button('Save',font=font_menu,pad=(1,0),size=btn_size_menu),
                  sg.Button('Exit',font=font_menu,pad=(0,0),size=btn_size_menu)]],justification='l',pad=(0,0))],
     [sg.Column(layout1, visible=False,key='-COL1-',element_justification='c',vertical_alignment='c',justification='c'), sg.Column(layout2, visible=False, key='-COL2-'), sg.Column(layout3, visible=False, key='-COL3-'), sg.Column(layout4, visible=False, key='-COL4-')]
 ]
@@ -100,3 +105,37 @@ layout=[
 window=sg.Window(title, layout,no_titlebar=False,grab_anywhere=True,size=(900,600),resizable=True,finalize=True)
 
 columnBtn.expand(True,True)
+
+
+def open_new_window(typeWin,buildArr):
+
+    layout = [[sg.Text('Choose file name:', key='-SAVEOPEN-')], [sg.InputText(key='-SAVETEXT-',font=font_text,size=(40,10))],
+              [sg.Button(typeWin,key='-SAVEBTN-',font=font_menu,pad=(0,0),size=btn_size_menu)]]
+    window = sg.Window(typeWin+" File", layout,size=(400,100), element_justification='c')
+    
+    while True:
+        event, values = window.read()
+   
+        if typeWin=="Save" and event == '-SAVEBTN-':
+                 if values['-SAVETEXT-']=='':
+                     sg.Popup('Cannot save file without name')
+                 else:
+                    f=open(values['-SAVETEXT-'],'w')
+                    strArr=str(buildArr).replace('[','');
+                    strArr=strArr.replace(']','')
+                    f.write(strArr)
+                    f.close()
+                    break
+        if typeWin=="Open" and event == '-SAVEBTN-':
+                 if values['-SAVETEXT-']=='':
+                     sg.Popup('Cannot open file')
+                 else:
+                    f=open(values['-SAVETEXT-'],'r')
+                    a=np.genfromtxt(values['-SAVETEXT-'],dtype=float)
+                    f.close()
+                    window.close()
+                    return a
+        if  event == sg.WIN_CLOSED:
+            break
+        
+    window.close()

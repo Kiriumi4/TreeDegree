@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from optparse import Values
 import PySimpleGUI as sg
 import window as wnd
@@ -14,11 +15,11 @@ norm = colors.BoundaryNorm(bounds, cmap.N)
 c=(0,0)
 rembTerr=0
 colorButn=['grey35','grey25','lightgreen','grey70','brown','pink','green']
-
+opened=0
 while True:  # Event Loop
     event, values = wnd.window.read()
-    #print(event)
-    #print(values)
+    print(event)
+    print(values)
     butt=['Road','Grass','Walkway','Tram tracks','Sign']
     buttKey=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-','-EDITBTN5-']
     textboxKey=['-EDITTEXT1-','-EDITTEXT2-','-EDITTEXT3-','-EDITTEXT4-','-EDITTEXT5-']
@@ -48,15 +49,28 @@ while True:  # Event Loop
        plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
        plt.savefig('square.png',transparent=True)
        wnd.window[f'-SQUARE-'].update('square.png')
-       #for i in range(0,c[0]):
-       #    for j in range(0,c[1]):
-       #        if event==(i,j):
-       #             wnd.window[(i,j)].update(text='  ')
        wnd.window.refresh()
     
-        
+    if event=='Open':
+        buildArr=wnd.open_new_window('Open',0);
+      
+        if type(buildArr)!=type(np.array([])):
+             sg.Popup('No file selected')
+        else:
+            c=len(buildArr),len(buildArr[0])
+            opened=1
+            wnd.window[f'-COL1-'].update(visible=False)
+            wnd.window[f'-COL2-'].update(visible=True)
+            wnd.window[f'-INSIZE-'].update(values['-OUTSIZE-'])
+            plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
+            plt.savefig('square.png',transparent=True)
+            wnd.window[f'-SQUARE-'].update('square.png')
+            wnd.window.refresh()
+  
+
+
     if event == 'Edit':
-        if values['-OUTSIZE-']=='':
+        if values['-OUTSIZE-']=='' and opened==0:
             sg.Popup('No new file. Click New to create file')
         else:
             wnd.window[f'-COL1-'].update(visible=False)
@@ -162,13 +176,12 @@ while True:  # Event Loop
             wnd.window[f'-EDITTEXT{i}-'].update('')
         plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
         plt.savefig('square.png',transparent=True)
-        #wnd.window[f'-EDITSQUARE-'].update('square.png')
-        #wnd.window[f'-EDITSQUARE-'].update(str(buildArr))
+
         wnd.window.refresh()
         rembTerr=0
 
     if event=='Compute':
-        if values['-OUTSIZE-']=='':
+        if values['-OUTSIZE-']=='' and opened==0:
             sg.Popup('No new file. Click New to create file')
         else: 
             wnd.window[f'-COL1-'].update(visible=False)
@@ -186,6 +199,8 @@ while True:  # Event Loop
         plt.savefig('square.png',transparent=True)
         wnd.window[f'-BUILDSQUARE-'].update('square.png')
         wnd.window.refresh()
+    if event=='Save':
+      wnd.open_new_window('Save',buildArr);
 
 
      

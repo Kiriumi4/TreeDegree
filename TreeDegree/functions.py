@@ -53,76 +53,88 @@ def algorithm(tab,option):
                      #print("walk")
                      b=1    
                  elif tab[i][j]==2 and not checkFound((i,j),G):
-                     #print("aaaa",i,j)
+                     
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
                      size=3
                      offset=([0,0]) #ustalone wedlug najblizszej krawedzi
-                     x0,y0=findStart(G)
+                     x0,y0=findStart(G,0)
+                     print("aaaaaaaaaa",x0,y0)
                      blacklist=checkAround(tab,G)
                      temp=0
                      temp2=len(G)
-                     print(temp2)
+                     #print(temp2)
                      while(temp<temp2):
+
+                        maxi=0
+                        maxG=0
+
+                        while maxi<len(G):
+   
+                            if G[maxi][0]==x0+offset[0]:
+                                maxG+=1
+                            maxi+=1
+
                         if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
                              x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
-                             #print(x0+offset[0],y0+offset[1])
                              tab,G=putTree(tab,size,(x,y),G)  
                              offset[1]+=size
                         offset[1]+=1
-                        maxi=0
-                        maxG=0
-                        while maxi<len(G):
-                            maxG=max(maxG, G[maxi][1]) 
-                            #print(i,"gio",G[maxi][0],"goooff",G[0][0]+offset[0], offset[0])
-                            if G[maxi][0]==G[0][0]+offset[0]:
-                                break
-                            maxi+=1
+
                         print(maxG)
-                        if offset[1]>maxG:
+                        temp+=offset[1]
+                        if  offset[1]>=maxG:
                             offset[0]+=1
                             offset[1]=0
-                        temp+=1
-
+                            xnon,y0=findStart(G,offset[0])
+                      
                  elif tab[i][j]==0:
-                     b=1
-              
+                     b=1    
                  #print(tab[i][j])
         return tab
 
 
    
-    #wyszukanie ksztaltu (wszytkich dotykajacych sie punktow o danym typie np. trawa)
+#wyszukanie ksztaltu (wszytkich dotykajacych sie punktow o danym typie np. trawa)
 def findPlaneOfType(tab,i,j,typ):      
     grass=np.array([[i,j]])
     temp=i
     temp2=j
+    bufferG=0
     #print(len(tab))
     #print(len(tab[0]))
     while(True):
-        if temp+1<len(tab) and tab[temp+1][temp2]==typ and checkFound((temp+1,temp2),grass)==False:
-            grass=np.resize(grass,(grass.shape[0]+1,2))
-            grass[grass.shape[0]-1][0]=temp+1
-            grass[grass.shape[0]-1][1]=temp2
-            temp+=1
-        elif temp2+1<len(tab[0]) and tab[temp][temp2+1]==typ and checkFound((temp,temp2+1),grass)==False:
-            grass=np.resize(grass,(grass.shape[0]+1,2))
-            grass[grass.shape[0]-1][0]=temp
-            grass[grass.shape[0]-1][1]=temp2+1
-            temp2+=1
-        elif temp>1 and tab[temp-1][temp2]==typ and checkFound((temp-1,temp2),grass)==False:
-            grass=np.resize(grass,(grass.shape[0]+1,2))
-            grass[grass.shape[0]-1][0]=temp-1
-            grass[grass.shape[0]-1][1]=temp2
-            temp-=1
-        elif temp2>1 and tab[temp][temp2-1]==typ and checkFound((temp,temp2-1),grass)==False:
-            grass=np.resize(grass,(grass.shape[0]+1,2))
-            grass[grass.shape[0]-1][0]=temp
-            grass[grass.shape[0]-1][1]=temp2-1
-            temp2-=1
-        else:
+        bufferG=0
+        for i in range(0,len(grass)):
+            temp=grass[i][0]
+            temp2=grass[i][1]
+            if temp>1 and tab[temp-1][temp2]==typ and checkFound((temp-1,temp2),grass)==False:
+                grass=np.resize(grass,(grass.shape[0]+1,2))
+                grass[grass.shape[0]-1][0]=temp-1
+                grass[grass.shape[0]-1][1]=temp2
+                bufferG=1
+                
+            if temp2+1<len(tab[0]) and tab[temp][temp2+1]==typ and checkFound((temp,temp2+1),grass)==False:
+                grass=np.resize(grass,(grass.shape[0]+1,2))
+                grass[grass.shape[0]-1][0]=temp
+                grass[grass.shape[0]-1][1]=temp2+1
+                bufferG=1
+                
+            if temp+1<len(tab) and tab[temp+1][temp2]==typ and checkFound((temp+1,temp2),grass)==False:
+                grass=np.resize(grass,(grass.shape[0]+1,2))
+                grass[grass.shape[0]-1][0]=temp+1
+                grass[grass.shape[0]-1][1]=temp2
+                bufferG=1
+                
+            if temp2>1 and tab[temp][temp2-1]==typ and checkFound((temp,temp2-1),grass)==False:
+                grass=np.resize(grass,(grass.shape[0]+1,2))
+                grass[grass.shape[0]-1][0]=temp
+                grass[grass.shape[0]-1][1]=temp2-1
+                bufferG=1
+        if bufferG==0:
             break
     grass=grass[grass[:,1].argsort()]
     grass=grass[grass[:,0].argsort()]   
+    
     return grass
 
 def checkFound(coord,coordTab):
@@ -174,14 +186,15 @@ def isSign(treeCoord, tab, size):
         return True
 
 
-def findStart(area):
+def findStart(area,start):
     areaStart1=10000000
     areaStart2=10000000
+
     for i in range (0,area.shape[0]):
         areaStart1=min(areaStart1,area[i][0])
 
     for i in range (0,area.shape[0]):
-        if area[i][0]==areaStart1:
+        if area[i][0]==areaStart1+start:
            areaStart2 = min(areaStart2,area[i][1])
 
     return areaStart1,areaStart2
