@@ -105,14 +105,15 @@ while True:  # Event Loop
                         sg.Popup("Picked quadrant out of range")
                     else:
                         xl,yl=func.selectQuad(left,c[0],c[1])
+                        yp=yl
                         xr,yr=func.selectQuad(right,c[0],c[1])
                         while True:
                             buildArr[xl][yl]=count+1
                             wnd.window[(xl,yl)].update(button_color=colorButn[count+1])
                             if xl==xr and yl==yr:
                                 break
-                            elif yl==c[1]-1:
-                                yl=0
+                            elif yl==yr:
+                                yl=yp
                                 xl+=1
                             else:
                                 yl+=1 
@@ -142,13 +143,14 @@ while True:  # Event Loop
                         sg.Popup("Picked quadrant out of range")
                     else:
                         xl,yl=func.selectQuad(left,c[0],c[1])
+                        yp=yl
                         xr,yr=func.selectQuad(right,c[0],c[1])
                         while True:
                             buildArr[xl][yl]=0
                             if xl==xr and yl==yr:
                                 break
-                            elif yl==c[0]-1:
-                                yl=0
+                            elif yl==yr:
+                                yl=yp
                                 xl+=1
                             else:
                                 yl+=1          

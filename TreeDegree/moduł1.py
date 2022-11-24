@@ -108,29 +108,28 @@ data=np.zeros((size,size))
 
 #print(data)
 width, height = size, size
+coords=np.array([[]])
 a, b = int(size/2),int(size/2)
 r = int(size/2)
 data[a][b]=1
 for angle in range(0, 360, 5):
     x = r * math.sin(math.radians(angle)) + a
     y = r * math.cos(math.radians(angle)) + b
+    
     data[int(round(y))][int(round(x))] = 1
  #nie dziala v
-def fill_circle(grid):
-    for r in grid:  # For each row
-        j1 = None  # left endpoint
-        j2 = None  # right endpoint
-        for j, v in enumerate(r):
-            if v == 1 and j1 is None:
-                j1 = j
-                continue
-            if v == 1 and j2 is None:
-                j2 = j
-                break
-        else:  # Did not find j1 AND j2
-            continue
-        for j in range(j1, j2):  # Fill all points between
-            r[j] = 1
-fill_circle(data)
+def fill_circle(grid,a,b,r):
+    return 0;
+
+fill_circle(data,a,b,r)
 print(data)
 
+#0
+#G=np.array([[1,2],[1,5],[2,3],[2,8],[14,1]])
+#print(G)
+#i=0
+#maxG=0
+#while G[i][0]==1:
+#    maxG=max(maxG, G[i][1])
+#    i+=1
+#print(maxG)

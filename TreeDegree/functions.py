@@ -2,9 +2,10 @@ from re import X
 from turtle import xcor
 import numpy as np
 
-temp=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','V','W','X','Y','Z']
+
 
 def selectQuad(pick, sizeX, sizeY):
+    temp=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','V','W','X','Y','Z']
     x=0
     y=0
     numStr=""
@@ -59,20 +60,27 @@ def algorithm(tab,option):
                      x0,y0=findStart(G)
                      blacklist=checkAround(tab,G)
                      temp=0
-                     temp2=G[:,0]
+                     temp2=len(G)
                      print(temp2)
-                     while(temp<len(G)):
+                     while(temp<temp2):
                         if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
                              x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
-                             print(x0+offset[0],y0+offset[1])
+                             #print(x0+offset[0],y0+offset[1])
                              tab,G=putTree(tab,size,(x,y),G)  
                              offset[1]+=size
                         offset[1]+=1
-                        print('temp:',temp,'temp2:',temp2,'G0:',G[:,0][temp])
-                        
-                        #if G[:,0][temp]!=temp2:
-                        #    temp2=G[:,0][temp]
-                        #    offset[0]+=1
+                        maxi=0
+                        maxG=0
+                        while maxi<len(G):
+                            maxG=max(maxG, G[maxi][1]) 
+                            #print(i,"gio",G[maxi][0],"goooff",G[0][0]+offset[0], offset[0])
+                            if G[maxi][0]==G[0][0]+offset[0]:
+                                break
+                            maxi+=1
+                        print(maxG)
+                        if offset[1]>maxG:
+                            offset[0]+=1
+                            offset[1]=0
                         temp+=1
 
                  elif tab[i][j]==0:
