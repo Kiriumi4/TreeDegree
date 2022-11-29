@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from re import X
 from turtle import xcor
 import numpy as np
@@ -40,6 +41,7 @@ def selectQuad(pick, sizeX, sizeY):
 def algorithm(tab,option):
         a=tab.shape # size of array
         G=np.array([[0,0]])
+        TreePut=np.array([])
         b=0
         for i in range(0,a[0]):
              for j in range(0,a[1]):
@@ -56,32 +58,39 @@ def algorithm(tab,option):
                      
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
                      size=3
+                     obw=1
                      offset=([0,0]) #ustalone wedlug najblizszej krawedzi
                      x0,y0=findStart(G,0)
-                     print("aaaaaaaaaa",x0,y0)
                      blacklist=checkAround(tab,G)
                      temp=0
-                     temp2=len(G)
                      #print(temp2)
-                     while(temp<temp2):
+                     while(temp<len(G)):
 
+
+                        hedge(tab,blacklist)
                         maxi=0
                         maxG=0
+                        tempG=0
+                        print(TreePut)
+                        print(x0+offset[0],y0+offset[1])
+
+                        if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound2((x0+offset[0],y0+offset[1]),size,blacklist):
+                            if checkFound2((x0+offset[0],y0+offset[1]),size,TreePut) ==False:
+                                    x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
+                                    tab,G,TreePut=putTree(tab,size,(x,y),G,TreePut) 
+                                    offset[1]+=3
+
+                        offset[1]+=1
 
                         while maxi<len(G):
    
                             if G[maxi][0]==x0+offset[0]:
                                 maxG+=1
                             maxi+=1
-
-                        if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound((x0+offset[0],y0+offset[1]),blacklist) :
-                             x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
-                             tab,G=putTree(tab,size,(x,y),G)  
-                             offset[1]+=size
-                        offset[1]+=1
-
-                        print(maxG)
-                        temp+=offset[1]
+                            
+                        
+                        
+                        temp+=1
                         if  offset[1]>=maxG:
                             offset[0]+=1
                             offset[1]=0
@@ -144,8 +153,19 @@ def checkFound(coord,coordTab):
             return True
     return False
 
+def checkFound2(coord,size,coordTab):
+
+    for i in range(0,size):
+           for j in range(0,size):
+                for x in range (0,coordTab.shape[0]):
+                    if coord[0]+i==coordTab[x][0] and coord[1]+j==coordTab[x][1]:
+                       
+                        return True
+ 
+    return False
 
 #Sprawdzenie wszystkich koordynatow na nesw dla pola droga i dodanie do listy zabronionych pozycji trawy na 3m od drogi
+#make blacklist zmienic na rozpoznawanie od drogi
 def checkAround(tab,grass):
     blacklist=np.array([])
 
@@ -234,18 +254,17 @@ def canWholeTree(area,tab,size,areaCoords):
 
 #znalezienie koordynatow dla wyrysowania drzewa (zmienic na kolo i wg pnia a nie lisci)
 
-def putTree(tab,size,start,G):
+def putTree(tab,size,start,G,TreePut):
     
     for i in range(0,size):
            for j in range(0,size):
                 tab[start[0]+i][start[1]+j]=6
-                for count,value in enumerate(G):
+                TreePut=np.resize(TreePut,(len(TreePut)+1,2))
+                TreePut[len(TreePut)-1][0]=start[0]+i
+                TreePut[len(TreePut)-1][1]=start[1]+j
 
-                        if value[0]==start[0]+i and value[1]==start[1]+j:
-                             #print(G[count])
-                             G=np.delete(G, count,axis=0)
                             
-    return tab,G
+    return tab,G,TreePut
 
 def circle(data, center, radius, size):
     for i in range(size):
@@ -253,6 +272,62 @@ def circle(data, center, radius, size):
             if (i - center[0]) ** 2 + (j - center[1]) ** 2 <= radius ** 2:
                 data[i * size + j] = 6
     return data
+
+def hedge(tab, blacklist):
+    
+    for i in range(len(blacklist)):
+        x=int(blacklist[i][0])
+        
+        y=int(blacklist[i][1])
+        print(x,y)
+        if tab[x][y]==2:
+            if tab[x-1][y]==1:
+                checkHowMuchGrass(tab,(x,y),'north')
+            elif tab[x][y-1]==1:
+                checkHowMuchGrass(tab,(x,y),'west')
+            elif tab[x+1][y]==1:
+                checkHowMuchGrass(tab,(x,y),'south')
+            elif tab[x][y+1]==1:
+                checkHowMuchGrass(tab,(x,y),'east')
+
+def checkHowMuchGrass(tab,coords,orient):
+    x=coords[0]
+    y=coords[1]
+    count=0
+    a=0
+    b=0
+    walkway=[[]]
+
+    for i in range (4):
+       if orient=="north":
+           a=i
+       elif orient=="east":
+           b=-i
+       elif orient=="south":
+           a=-i
+       elif orient=="west":
+           b=i
+
+       if tab[x+a][y+b]==2:
+            count+=1
+       elif tab[x+a][y+b]==3:
+           walkway=[x+a,y+b]
+           break
+    print(walkway)
+    if count==3 and walkway!=[[]]:
+        if orient=="north":
+           tab[walkway[0]-2][walkway[1]]=7
+        elif orient=="east":
+           tab[walkway[0]][walkway[1]+2]=7
+        elif orient=="south":
+           tab[walkway[0]+2][walkway[1]]=7
+        elif orient=="south":
+           tab[walkway[0]][walkway[1]-2]=7
+    if (count==2 or count==1 ) and walkway!=[[]]:
+           tab[x][y]=7
+        
+        
+    return count
 
 
 #tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])

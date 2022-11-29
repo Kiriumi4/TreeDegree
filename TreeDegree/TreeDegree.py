@@ -9,12 +9,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 
-cmap = colors.ListedColormap(['0.5','0.1','lightgreen','0.8','brown','pink','green'])
-bounds=[0,1,2,3,4,5,6,7]
+cmap = colors.ListedColormap(['0.5','0.1','lightgreen','0.8','brown','pink','green',(0.24, 1, 0.25,1)])
+bounds=[0,1,2,3,4,5,6,7,8]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 c=(0,0)
 rembTerr=0
-colorButn=['grey35','grey25','lightgreen','grey70','brown','pink','green']
+colorButn=['grey35','grey25','lightgreen','grey70','brown','pink','green', 'lawn green']
 opened=0
 while True:  # Event Loop
     event, values = wnd.window.read()
@@ -78,8 +78,7 @@ while True:  # Event Loop
             wnd.window[f'-COL3-'].update(visible=True)
             wnd.window[f'-COL4-'].update(visible=False)
             
-            plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
-            plt.savefig('square.png',transparent=True)
+            
             print(buildArr)
             for i in range(0,c[0]):
                 for j in range(0,c[1]):
