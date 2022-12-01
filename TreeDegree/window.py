@@ -1,4 +1,5 @@
 from array import typecodes
+from cgitb import enable
 from multiprocessing import Value
 from pydoc import visiblename
 import PySimpleGUI as sg
@@ -76,17 +77,25 @@ layout3=[
     ]
 ]
 
-choices=('Normal','Wild','Pretty')
-choices2=('Tree1','Flowers3','Bush1','Bush2')
+choices=('Max Trees','Small Gap 1-3m','Big Gap 4-10m','Random (Gaps 0-10m)')
+choices2=( 'Small Trees','Medium Trees','Big Trees','Random (All tree sizes)')
 
 layout4=[
         [sg.Column(
-        [[sg.Text("Options",font = font_title,pad=(20,20))],
-        [sg.Listbox(choices, size=(15, len(choices)))],
-        [sg.Button('Start building',font=font_btn)]]
-        ),
+            [
+                [sg.Column(
+                    [[sg.Text("Options - Tree Density",font = font_title,pad=(20,0))],
+                    [sg.Listbox(choices, key='-OPTIONSDENSE-',size=(25, len(choices)),enable_events=True)]],pad=(5,0))
+                ],
+                [sg.Column(
+                    [[sg.Text("Options - Tree Variation",font = font_title,pad=(20,0))],
+                    [sg.Listbox(choices2, key='-OPTIONSVARIETY-', size=(25, len(choices2)),enable_events=True)]],pad=(5,0))
+                 ], 
+                 [sg.Button('Start building',font=font_btn)]
+            ],element_justification='c'),
         sg.VSeperator(),
         sg.Image('square.png',key='-BUILDSQUARE-')
+       
 
     ]
    

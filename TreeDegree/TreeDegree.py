@@ -15,14 +15,16 @@ norm = colors.BoundaryNorm(bounds, cmap.N)
 c=(0,0)
 rembTerr=0
 colorButn=['grey35','grey25','lightgreen','grey70','brown','pink','green', 'lawn green']
+butt=['Road','Grass','Walkway','Tram tracks','Sign']
+buttKey=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-','-EDITBTN5-']
+textboxKey=['-EDITTEXT1-','-EDITTEXT2-','-EDITTEXT3-','-EDITTEXT4-','-EDITTEXT5-']
+
 opened=0
 while True:  # Event Loop
     event, values = wnd.window.read()
     print(event)
     print(values)
-    butt=['Road','Grass','Walkway','Tram tracks','Sign']
-    buttKey=['-EDITBTN1-','-EDITBTN2-','-EDITBTN3-','-EDITBTN4-','-EDITBTN5-']
-    textboxKey=['-EDITTEXT1-','-EDITTEXT2-','-EDITTEXT3-','-EDITTEXT4-','-EDITTEXT5-']
+   
     buttNum=1
     
 
@@ -193,11 +195,26 @@ while True:  # Event Loop
             wnd.window.refresh()
 
     if event=='Start building':
-        func.algorithm(buildArr,0)
-        plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
-        plt.savefig('square.png',transparent=True)
-        wnd.window[f'-BUILDSQUARE-'].update('square.png')
-        wnd.window.refresh()
+        if values['-OPTIONSDENSE-']==[] or values['-OPTIONSVARIETY-']==[]:
+            sg.Popup('Pick options for tree density and variety')
+        else:
+            option1=0
+            option2=0
+            for count,val in enumerate(wnd.choices):
+                
+                if val in values['-OPTIONSDENSE-']:
+                    option1=count
+            for count,val in enumerate(wnd.choices2):
+                if val in values['-OPTIONSVARIETY-']:
+                    option2=count
+
+
+            print(option1,option2)
+            func.algorithm(buildArr,option1,option2)
+            plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
+            plt.savefig('square.png',transparent=True)
+            wnd.window[f'-BUILDSQUARE-'].update('square.png')
+            wnd.window.refresh()
     if event=='Save':
       wnd.open_new_window('Save',buildArr);
 

@@ -1,7 +1,6 @@
 from asyncio.windows_events import NULL
-from re import X
-from turtle import xcor
 import numpy as np
+import random
 
 
 
@@ -38,11 +37,17 @@ def selectQuad(pick, sizeX, sizeY):
         
         return count,int(numStr)-1
 
-def algorithm(tab,option):
+def algorithm(tab,optionDens,optionVar):
         a=tab.shape # size of array
         G=np.array([[0,0]])
         TreePut=np.array([])
         b=0
+        Dens=[[0],[1,2,3],[4,5,6]]
+        Var=[[3,5,7],[9,11,13],[15,17,19]]
+
+
+        sizeRan=Var[optionVar]
+        
         for i in range(0,a[0]):
              for j in range(0,a[1]):
                  if tab[i][j]==1:
@@ -57,8 +62,10 @@ def algorithm(tab,option):
                  elif tab[i][j]==2 and not checkFound((i,j),G):
                      
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
-                     size=3
-                     obw=1
+                     #wybranie rozmiaru drzewa w obrebie jednej trawy 
+                     print(sizeRan)
+                     size=sizeRan[random.randint(0,2)]
+                     
                      offset=([0,0]) #ustalone wedlug najblizszej krawedzi
                      x0,y0=findStart(G,0)
                      blacklist=checkAround(tab,G)
@@ -71,14 +78,14 @@ def algorithm(tab,option):
                         maxi=0
                         maxG=0
                         tempG=0
-                        print(TreePut)
+                        
                         print(x0+offset[0],y0+offset[1])
 
                         if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound2((x0+offset[0],y0+offset[1]),size,blacklist):
                             if checkFound2((x0+offset[0],y0+offset[1]),size,TreePut) ==False:
                                     x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
                                     tab,G,TreePut=putTree(tab,size,(x,y),G,TreePut) 
-                                    offset[1]+=3
+                                    offset[1]=offset[1]+size
 
                         offset[1]+=1
 
