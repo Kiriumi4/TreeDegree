@@ -43,10 +43,18 @@ def algorithm(tab,optionDens,optionVar):
         TreePut=np.array([])
         b=0
         Dens=[[0],[1,2,3],[4,5,6]]
+        DensFlat=[0,1,2,3,4,5,6]
         Var=[[3,5,7],[9,11,13],[15,17,19]]
+        VarFlat=[3,5,7,9,11,13,15,17,19]
 
-
-        sizeRan=Var[optionVar]
+        if optionVar==3:
+             sizeRan=VarFlat
+        else:
+            sizeRan=Var[optionVar]
+        if optionDens==3:
+             sizeDens=DensFlat
+        else:
+            sizeDens=Dens[optionDens]
         
         for i in range(0,a[0]):
              for j in range(0,a[1]):
@@ -64,8 +72,9 @@ def algorithm(tab,optionDens,optionVar):
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
                      #wybranie rozmiaru drzewa w obrebie jednej trawy 
                      print(sizeRan)
-                     size=sizeRan[random.randint(0,2)]
-                     
+                     print(sizeDens)
+                     size=sizeRan[random.randint(0,len(sizeRan)-1)]
+                     gap=sizeDens[random.randint(0,len(sizeDens)-1)]
                      offset=([0,0]) #ustalone wedlug najblizszej krawedzi
                      x0,y0=findStart(G,0)
                      blacklist=checkAround(tab,G)
@@ -77,15 +86,16 @@ def algorithm(tab,optionDens,optionVar):
                         hedge(tab,blacklist)
                         maxi=0
                         maxG=0
-                        tempG=0
                         
-                        print(x0+offset[0],y0+offset[1])
-
                         if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound2((x0+offset[0],y0+offset[1]),size,blacklist):
                             if checkFound2((x0+offset[0],y0+offset[1]),size,TreePut) ==False:
                                     x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
-                                    tab,G,TreePut=putTree(tab,size,(x,y),G,TreePut) 
-                                    offset[1]=offset[1]+size
+                                    tab,G,TreePut=putTree(tab,size,(x,y),G,TreePut,gap) 
+                                    if optionDens==3:
+                                        size=sizeRan[random.randint(0,len(sizeRan)-1)]
+                                    if optionVar==3:
+                                        gap=sizeVar[random.randint(0,len(sizeVar)-1)]
+                                           
 
                         offset[1]+=1
 
@@ -95,8 +105,6 @@ def algorithm(tab,optionDens,optionVar):
                                 maxG+=1
                             maxi+=1
                             
-                        
-                        
                         temp+=1
                         if  offset[1]>=maxG:
                             offset[0]+=1
@@ -261,11 +269,12 @@ def canWholeTree(area,tab,size,areaCoords):
 
 #znalezienie koordynatow dla wyrysowania drzewa (zmienic na kolo i wg pnia a nie lisci)
 
-def putTree(tab,size,start,G,TreePut):
+def putTree(tab,size,start,G,TreePut,gap):
     
-    for i in range(0,size):
-           for j in range(0,size):
-                tab[start[0]+i][start[1]+j]=6
+    for i in range(0,size+gap):
+           for j in range(0,size+gap):
+                if i<size and j<size:
+                    tab[start[0]+i][start[1]+j]=6
                 TreePut=np.resize(TreePut,(len(TreePut)+1,2))
                 TreePut[len(TreePut)-1][0]=start[0]+i
                 TreePut[len(TreePut)-1][1]=start[1]+j
@@ -335,17 +344,4 @@ def checkHowMuchGrass(tab,coords,orient):
         
         
     return count
-
-
-#tab1=np.array([[0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,2,0,0,0,0,0],[0,2,2,2,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]])
-##tab1=np.resize(tab1,(4,2))
-#print(tab1)  #tab[wiersz][kolumna]
-#print(doGrass(tab1,2,1))
-#a=doGrass(tab1,2,1)
-#print(canTree(a,3,(0,1)))
-#print(algorithm(tab1,0))
-#coordTab=np.array([[2,3]])
-#print(checkFound((2,3),coordTab))
-#print(algorithm(tab))
-#algorithm(tab)
 
