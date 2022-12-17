@@ -18,8 +18,8 @@ owo= np.array([[3,2],[1,3],[2,2],[2,3],[2,4],[3,8],[3,3],[3,4],[3,5]])
 
 
 
-#grass= np.array([[4,5],[5,5],[5,9],[3,6],[5,6],[5,7],[4,6],[5,8],[3,7],[4,7],[3,8],[3,9],[4,8],[4,9]])
-
+grass= np.array([[4,5],[5,5],[5,9],[3,6],[5,6],[5,7],[4,6],[5,8],[3,7],[4,7],[3,8],[3,9],[4,8],[4,9]])
+print(np.concatenate((grass,owo), axis=0))
 #print(grass)
 #grass=grass[grass[:,1].argsort()]
 #grass=grass[grass[:,0].argsort()]   
@@ -61,51 +61,51 @@ data=np.zeros((20 ,20))
 ##    return 0;
 ##fill_circle(data)
 ##fill_circle(data,a,b,r)
-#print(data)
+##print(data)
 
 
 
-def checkFound(coord,coordTab):
+#def checkFound(coord,coordTab):
 
-    for i in range (0,len(coordTab)):
-        if coord[0]==coordTab[i][0] and coord[1]==coordTab[i][1]:
-            return True
-    return False
+#    for i in range (0,len(coordTab)):
+#        if coord[0]==coordTab[i][0] and coord[1]==coordTab[i][1]:
+#            return True
+#    return False
 
-def circle( center, radius):
-    circlecoords=np.array([])
-    a=center[0]
-    b=center[1]
-    for angle in range(0, 360, 5):
-        x = radius * math.sin(math.radians(angle)) + a
-        y = radius * math.cos(math.radians(angle)) + b
-        xr=int(round(x))
-        yr=int(round(y))
+#def circle( center, radius):
+#    circlecoords=np.array([])
+#    a=center[0]
+#    b=center[1]
+#    for angle in range(0, 360, 5):
+#        x = radius * math.sin(math.radians(angle)) + a
+#        y = radius * math.cos(math.radians(angle)) + b
+#        xr=int(round(x))
+#        yr=int(round(y))
         
         
             
-        if xr<a:
-                for j in range(xr,a):
-                    if not checkFound((yr,j),circlecoords):
-                        circlecoords=np.resize(circlecoords,(len(circlecoords)+1,2))
-                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-2]=yr
-                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-1]=j
-        elif xr>a :
+#        if xr<a:
+#                for j in range(xr,a):
+#                    if not checkFound((yr,j),circlecoords):
+#                        circlecoords=np.resize(circlecoords,(len(circlecoords)+1,2))
+#                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-2]=yr
+#                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-1]=j
+#        elif xr>a :
             
-                for j in range(a,xr+1):
-                    if not checkFound((yr,j),circlecoords):
-                        circlecoords=np.resize(circlecoords,(len(circlecoords)+1,2))
-                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-2]=yr
-                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-1]=j
+#                for j in range(a,xr+1):
+#                    if not checkFound((yr,j),circlecoords):
+#                        circlecoords=np.resize(circlecoords,(len(circlecoords)+1,2))
+#                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-2]=yr
+#                        circlecoords[len(circlecoords)-1][len(circlecoords[0])-1]=j
       
     
-    return circlecoords
-size=10
-a=circle((10,10),int(size/2))
-print(a)
-for i,j in a:
-    #print(i,j)
-    data[int(i)][int(j)]=1
+#    return circlecoords
+#size=10
+#a=circle((10,10),int(size/2))
+#print(a)
+#for i,j in a:
+#    #print(i,j)
+#    data[int(i)][int(j)]=1
 
-print(data)
+#print(data)
 
