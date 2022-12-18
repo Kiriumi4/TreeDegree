@@ -4,8 +4,8 @@ import numpy as np
 import random
 import math
 
-def selectQuad(pick, sizeX, sizeY):
-    temp=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','V','W','X','Y','Z']
+def selectQuad(pick, sizeY, sizeX):
+    temp=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
     x=0
     y=0
     numStr=""
@@ -24,14 +24,14 @@ def selectQuad(pick, sizeX, sizeY):
         if lettStr==tempStr+temp[i]:
             break
         i=i+1
-        if i>=25:
+        if i>=26:
             i=0
             tempStr=temp[j]
             j=j+1
         count+=1;
         pass
     #print(count,int(numStr)-1)
-    if count>sizeX-1 or int(numStr)>sizeY or count<0 or int(numStr)<0:
+    if count>sizeY-1 or int(numStr)>sizeX or count<0 or int(numStr)<0:
         return False
     else:
         
@@ -44,12 +44,12 @@ def algorithm(tab,optionDens,optionVar):
         print(tab) 
         print(tab[0][0])      
         
-      
-        Dens=[[0],[1,2,3],[4,5,6]]
-        DensFlat=[0,1,2,3,4,5,6]
-        Var=[[2,3,4],[5,6,7],[8,10,11]]
-        VarFlat=[2,3,4,5,6,7,8,9,10,11]
-        Sizes=[0,0,0,0,0,0,0,0,0,0]
+        
+        Dens=[[0],[1,2],[3,4,5]]
+        DensFlat=[0,1,2,3,4,5]
+        Var=[[3,4,5],[6,7,8],[9,10]]
+        VarFlat=[3,4,5,6,7,8,9,10]
+        Sizes=[0,0,0,0,0,0,0,0]
         sIdx=0
         if optionVar==3:
              sizeRan=VarFlat
@@ -63,8 +63,7 @@ def algorithm(tab,optionDens,optionVar):
         for i in range(0,a[0]):
              for j in range(0,a[1]):
                  
-                 
-             
+   
                  if tab[i][j]==2 and not checkFound((i,j),G):
                      
                      G=findPlaneOfType(tab,i,j,2) #szukanie trawy typ-2 
@@ -76,11 +75,13 @@ def algorithm(tab,optionDens,optionVar):
                      x0,y0=findStart(G,0)
                      #blacklist dla drogi typ 1 3 metry
                      blacklistRoad=checkAround(tab,G,3,1)
+                     print("G",G)
+                     print("blacklist",blacklistRoad)
                      #blacklist dla sieci gazowej typ 11 3 metry
-                     blacklistGass=checkAround(tab,G,3,11)
-                     blacklistEnergy=checkAround(tab,G,2,10)
-                     blacklistTele=checkAround(tab,G,2,9)
-                     blacklistWater=checkAround(tab,G,2,13)
+                     blacklistGass=checkAround2(tab,G,3,11)
+                     blacklistEnergy=checkAround2(tab,G,2,10)
+                     blacklistTele=checkAround2(tab,G,2,9)
+                     blacklistWater=checkAround2(tab,G,2,13)
 
                      blacklistOther=[]
 
@@ -108,42 +109,36 @@ def algorithm(tab,optionDens,optionVar):
                      #print(temp2)
                      while(temp<len(G)):
 
-
+                         #dodanie krzewow na podstawie black listy 
                         hedge(tab,blacklistRoad)
                         maxi=0
                         maxG=0
                         
-                        #if canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1])) and not checkFound2((x0+offset[0],y0+offset[1]),size,blacklist):
-                        #    if checkFound2((x0+offset[0],y0+offset[1]),size,TreePut) ==False:
-                        #            x,y=canWholeTree(G,tab,size,(x0+offset[0],y0+offset[1]))
-                        #            tab,G,TreePut=putTree(tab,size,(x,y),G,TreePut,gap) 
-                        #            if optionDens==3:
-                        #                size=sizeRan[random.randint(0,len(sizeRan)-1)]
-                        #            if optionVar==3:
-                        #                gap=sizeDens[random.randint(0,len(sizeDens)-1)]
+                        
                         Tree=circle((x0+offset[0],y0+offset[1]),int(size/2))
-                       #and not checkFound((x0+offset[0],y0+offset[1]),blacklistRoad) and not checkFound((x0+offset[0],y0+offset[1]),blacklistOther) and canWholeTreeCirk(tab,Tree) and not checkFoundCirk(Tree,TreePut) and not checkFoundCirk(Tree,blacklistHeat): 
+                      
+                        #sprawdzenie czy pien mozna postawic w miejscu na trawie
                         if  checkFound((x0+offset[0],y0+offset[1]),G):
-                            if canWholeTreeCirk(tab,Tree):
-                                if not checkFound((x0+offset[0],y0+offset[1]),blacklistRoad):
-                                    if not checkFound((x0+offset[0],y0+offset[1]),blacklistOther):
-                                        if canWholeTreeCirk(tab,Tree):
-                                            if not checkFoundCirk(Tree,TreePut):
-                                               if not checkFoundCirk(Tree,blacklistHeat):
+                            #sprawdzenie czy pieñ nie stoi zbyt blisko drogi 
+                            if not checkFound((x0+offset[0],y0+offset[1]),blacklistRoad):
+                                #sprawdzenie czy pieñ nie stoi zbyt blisko innych sieci 
+                                if not checkFound((x0+offset[0],y0+offset[1]),blacklistOther):
+                                    #sprawdzenie czy korona nie narusza znakow, ulicy,lamp czy innych drzew
+                                    if canWholeTreeCirk(tab,Tree) and not checkFoundCirk(Tree,TreePut): 
+                                        #sprawdzenie czy korona znajduje sie 2 metry od sieci grzewczej
+                                        if not checkFoundCirk(Tree,blacklistHeat):
 
-                                                    print("---------------------------")
-                                                    print(blacklistRoad)
-                                                    print(x0+offset[0],y0+offset[1])
-                                                    tab,TreePut=putTreeCirk(tab,int(size/2),(x0+offset[0],y0+offset[1]),TreePut,gap) 
-                                                    if size not in Sizes:
-                                                        Sizes[sIdx]=size
-                                                        sIdx+=1
+                                                   
+                                            tab,TreePut=putTreeCirk(tab,int(size/2),(x0+offset[0],y0+offset[1]),TreePut,gap) 
+                                            if size not in Sizes:
+                                                Sizes[sIdx]=size
+                                                sIdx+=1
 
-                                                    if optionVar==3:
-                                                        size=sizeRan[random.randint(0,len(sizeRan)-1)]
+                                            if optionVar==3:
+                                                size=sizeRan[random.randint(0,len(sizeRan)-1)]
                                 
-                                                    if optionDens==3:
-                                                        gap=sizeDens[random.randint(0,len(sizeDens)-1)]                   
+                                            if optionDens==3:
+                                                gap=sizeDens[random.randint(0,len(sizeDens)-1)]                   
 
                         offset[1]+=1
 
@@ -157,9 +152,9 @@ def algorithm(tab,optionDens,optionVar):
                         if  offset[1]>=maxG:
                             offset[0]+=1
                             offset[1]=0
-                            xnon,y0=findStart(G,offset[0])
+                            _,y0=findStart(G,offset[0])
                
-                 
+                
         return tab,Sizes
 
 
@@ -170,8 +165,6 @@ def findPlaneOfType(tab,i,j,typ):
     temp=i
     temp2=j
     bufferG=0
-    #print(len(tab))
-    #print(len(tab[0]))
     while(True):
         bufferG=0
         for i in range(0,len(grass)):
@@ -215,16 +208,6 @@ def checkFound(coord,coordTab):
             return True
     return False
 
-def checkFound2(coord,size,coordTab):
-
-    for i in range(0,size):
-           for j in range(0,size):
-                for x in range (0,coordTab.shape[0]):
-                    if coord[0]+i==coordTab[x][0] and coord[1]+j==coordTab[x][1]:
-
-                        return True
- 
-    return False
 
 def checkFoundCirk(circleTab,coordTab):
     temp=0
@@ -236,7 +219,8 @@ def checkFoundCirk(circleTab,coordTab):
     return False
 #Sprawdzenie wszystkich koordynatow na nesw dla pola droga i dodanie do listy zabronionych pozycji trawy na 3m od drogi
 #make blacklist zmienic na rozpoznawanie od drogi
-def checkAround(tab,grass,meters,typ):
+
+def checkAround2(tab,grass,meters,typ):
     blacklist=np.array([])
 
     for g in grass:
@@ -263,23 +247,33 @@ def checkAround(tab,grass,meters,typ):
                 blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]-i
     return blacklist
 
+def checkAround(tab,grass,meters,typ):
+    blacklist=np.array([])
 
+    for g in grass:
+        for i in range(meters+1):
+            if g[0]-i>=0 and tab[g[0]-i][g[1]]==typ: 
+               
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+            if g[1]-i>=0 and tab[g[0]][g[1]-i]==typ: 
+           
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+            if g[0]+i<len(tab) and tab[g[0]+i][g[1]]==typ: 
+            
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+            if g[1]+i<len(tab[0]) and tab[g[0]][g[1]+i]==typ: 
+            
+                blacklist=np.resize(blacklist,(len(blacklist)+1,2))
+                blacklist[len(blacklist)-1][len(blacklist[0])-2]=g[0]
+                blacklist[len(blacklist)-1][len(blacklist[0])-1]=g[1]
+    return blacklist
 
-
-
-
-
-#okreslamy odleglosc od znaku drogowego (zalozymy ze drzewo nie moze stac 1 m kolo znaku znakiem)
-#zmienic warunek przy krawedzi (dla trawy o <3 m kolo krawedzi program sie wywala)
-def isSign(treeCoord, tab, size):
-    for i in range(1,size+3):
-        if treeCoord[1]+i<len(tab[0]) and tab[treeCoord[0]][treeCoord[1]+i]==5:
-        
-            return False
-    if (treeCoord[0]+1<len(tab) and tab[treeCoord[0]+1][treeCoord[1]]==5) or (treeCoord[0]-1<0 and tab[treeCoord[0]-1][treeCoord[1]]==5 ) or (treeCoord[1]-1<0 and tab[treeCoord[0]][treeCoord[1]-1]==5):
-        return False
-    else:
-        return True
 
 
 def findStart(area,start):
@@ -303,30 +297,7 @@ def findStart(area,start):
 #zalozmy areastart1/areastar2 jako pien drzewa //na pozniej - jeszcze nie zaimplementowane
 # dla drzew niskich sprawdzanie czy cale drzewo zmiesci sie na trawie
 #postarac sie zmienic na kolo i wg pnia 
-def canWholeTree(area,tab,size,areaCoords): 
-  
-    placeable=0
-    tempi=0
 
-    #print(area)
-    areaStart1=areaCoords[0]
-    areaStart2=areaCoords[1]
-
-    #print("a1,a2",areaStart1, areaStart2)
-    for i in range(0,size*size):
-        for j in area:
-            if j[0]==areaStart1+tempi and j[1]==areaStart2+i%size:    
-                placeable+=1
-                
-                
-        if i%size==0 and i>=size:
-            tempi+=1
-       
-    if placeable==size*size and isSign((areaStart1, areaStart2),tab,size):
-        print("Can put Tree")
-        return areaStart1,areaStart2
-    else:
-        return False
 
 
 def canWholeTreeCirk(tab,Circle): 
@@ -339,20 +310,28 @@ def canWholeTreeCirk(tab,Circle):
         if i<0 or j<0 or i>=len(tab) or j>=len(tab[0]):
             return False
         if tab[i][j]==1 :
-            #print(i,j," road")
+            print(i,j," road")
             tempi=1
             return False
         if tab[i][j]==4:
-            #print(i,j," sign")
+            print(i,j," tram")
+            tempi=1
+            return False
+        if tab[i][j]==5:
+            print(i,j," sign")
             tempi=1
             return False
         if  tab[i][j]==6:
-            #print(i,j," other tree")
+            print(i,j," other tree")
+            tempi=1
+            return False
+        if  tab[i][j]==8:
+            print(i,j," lamp")
             tempi=1
             return False
                 
     if tempi==0:
-        #print("Can put Tree")
+       
         return True
     else:
         return False
@@ -375,21 +354,6 @@ def putTreeCirk(tab,size,start,TreePut,gap):
                           
     return tab,TreePut
 
-#znalezienie koordynatow dla wyrysowania drzewa (zmienic na kolo i wg pnia a nie lisci)
-
-def putTree(tab,size,start,G,TreePut,gap):
-    
-
-    for i in range(0,size+gap):
-           for j in range(0,size+gap):
-                if i<size and j<size:
-                    tab[start[0]+i][start[1]+j]=6
-                TreePut=np.resize(TreePut,(len(TreePut)+1,2))
-                TreePut[len(TreePut)-1][0]=start[0]+i
-                TreePut[len(TreePut)-1][1]=start[1]+j
-
-                            
-    return tab,G,TreePut
 
 def circle(center, radius):
     circlecoords=np.array([])
@@ -432,6 +396,8 @@ def hedge(tab, blacklist):
             elif y<len(tab[0])-1 and tab[x][y+1]==1:
                 checkHowMuchGrass(tab,(x,y),'east')
 
+    
+
 def checkHowMuchGrass(tab,coords,orient):
     x=coords[0]
     y=coords[1]
@@ -458,16 +424,23 @@ def checkHowMuchGrass(tab,coords,orient):
                 break
     
     if count==3 and walkway!=[[]]:
-        if orient=="north":
+        if orient=="north" and not walkway[0]-2<0:
            tab[walkway[0]-2][walkway[1]]=7
-        elif orient=="east":
+        elif orient=="east" and not walkway[1]+2>=len(tab[1]):
            tab[walkway[0]][walkway[1]+2]=7
-        elif orient=="south":
-           tab[walkway[0]+2][walkway[1]]=7
-        elif orient=="south":
+        elif orient=="south" and not walkway[0]+2>=len(tab[0]):
+           tab[walkway[0]+2][walkway[1]]=7  
+        elif orient=="south" and not walkway[0]-2<0:
            tab[walkway[0]][walkway[1]-2]=7
-    if (count==2 or count==1 ) and walkway!=[[]]:
-           tab[x][y]=7
+    elif count==2 and walkway!=[[]]:
+        if orient=="north" and not walkway[0]-1<0:
+           tab[walkway[0]-1][walkway[1]]=7
+        elif orient=="east" and not walkway[1]+1>=len(tab[1]):
+           tab[walkway[0]][walkway[1]+1]=7
+        elif orient=="south" and not walkway[0]+1>=len(tab[0]):
+           tab[walkway[0]+1][walkway[1]]=7
+        elif orient=="south" and not walkway[1]-1<0:
+           tab[walkway[0]][walkway[1]-1]=7
         
         
     return count

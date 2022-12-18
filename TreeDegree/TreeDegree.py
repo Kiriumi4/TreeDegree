@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 from optparse import Values
+from re import A
 import PySimpleGUI as sg
 import window as wnd
 import functions as func
@@ -8,9 +9,22 @@ from window import num_buttons_j
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
-#                                      0,                   road            , grass     ,      walkway,           tram  ,            sign ,        tree ,                  hedge   ,      lamp             ,Telecom  Net,           Elec,      pipe  ,       heating  ,        water
-cmap = colors.ListedColormap([(0.35, 0.35, 0.35,1),(0.23, 0.23, 0.23,1),(0.79, 1, 0.44,1),(0.7, 0.7, 0.7,1),(0.63, 0.32, 0.18,1),(1, 0.27, 0,1),(0.42, 0.56, 0.14,1),(0.60, 0.80, 0.2,1),(1, 0.93, 0.55,1),(0.94, 0.5, 0.5,1),(1, 0.84, 0,1),(1, 1, 1,1),(1, 0.39, 0.28,1),(0, 0.96, 1,1)])
-bounds=[0,1,2,3,4,5,6,7,8,9,10,11,12,13]
+#                                      0,    road, grass,  walkway, tram  , sign , tree , hedge   ,   lamp    ,Telecom  Net, Elec,pipe  ,heating f, water
+cmap = colors.ListedColormap([(0.35, 0.35, 0.35,1),
+                              (0.23, 0.23, 0.23,1),
+                              (0.79, 1, 0.44,1),
+                              (0.7, 0.7, 0.7,1),
+                              (0.63, 0.32, 0.18,1),
+                              (1, 0.27, 0,1),
+                              (0.42, 0.56, 0.14,1),
+                              (0.60, 0.80, 0.2,1),
+                              (1, 0.93, 0.55,1),
+                              (0.94, 0.5, 0.5,1),
+                              (1, 0.84, 0,1),
+                              (1, 1, 1,1),
+                              (1, 0.39, 0.28,1),
+                              (0, 0.96, 1,1)])
+bounds=[0,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 c=(0,0)
 rembTerr=0
@@ -44,10 +58,12 @@ while True:  # Event Loop
             plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
             plt.savefig('square.png',transparent=True)
             wnd.window[f'-SQUARE-'].update('square.png')
+            wnd.window[f'-INSIZE-'].update(str(len(buildArr))+' x '+str(len(buildArr[0])))
             wnd.window.refresh()
 
+   
 
-    
+
     if event=='Open':
 
         buildArr=wnd.open_new_window('Open',0);
@@ -58,12 +74,11 @@ while True:  # Event Loop
             c=len(buildArr),len(buildArr[0])
             opened=1
             wnd.window[f'-OBR-'].update(visible=False)
-            
             wnd.window[f'-COL2-'].update(visible=True)
-            wnd.window[f'-INSIZE-'].update(values['-OUTSIZE-'])
             plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
             plt.savefig('square.png',transparent=True)
             wnd.window[f'-SQUARE-'].update('square.png')
+            wnd.window[f'-INSIZE-'].update(str(len(buildArr))+' x '+str(len(buildArr[0])))
             wnd.window.refresh()
   
 
@@ -91,6 +106,7 @@ while True:  # Event Loop
             wnd.window[f'-EDITTEXT{count+1}-'].update(visible=True)
             for j in range(1,12):
                 if j!=count+1:
+                    wnd.window[f'-EDITTEXT{j}-'].update('')  
                     wnd.window[f'-EDITTEXT{j}-'].update(visible=False)    
                 wnd.window.refresh()
                 if count+1<6:
@@ -102,28 +118,28 @@ while True:  # Event Loop
         for i in range(0,c[0]):
             for j in range(0,c[1]):
                 if event==(i,j):
-                    #wnd.window[(i,j)].update(text=' '+str(rembTerr)+' ')
                     wnd.window[(i,j)].update(button_color=colorButn[rembTerr])
                     buildArr[i][j]=rembTerr
             
 
     if event== 'Add':
+        #ktory blok jest aktualnie dodawany
         for count,value in enumerate(textboxKey):
             if values[value]!='':
+                #sprawdzenie czy zostawy wpisane dwie wartosci z myslnikiem
                 if '-' in values[value]:
+                    #podzielenie wartosci
                     temp=values[value].find('-')
                     left=values[value][:temp]
                     right=values[value][temp+1:]
-                    print(left)
-                    print(right)
-                    if func.selectQuad(left,c[0],c[1])==False or func.selectQuad(right,c[0],c[1])==False:
+                    if not (func.selectQuad(left,c[0],c[1]) or func.selectQuad(right,c[0],c[1])):
                         sg.Popup("Picked quadrant out of range")
                     else:
                         xl,yl=func.selectQuad(left,c[0],c[1])
                         yp=yl
                         xr,yr=func.selectQuad(right,c[0],c[1])
                         while True:
-
+                            #ominiecie wartosci 6,7 (drzewo i krzew)
                             if count+1<6:
                                 buildArr[xl][yl]=count+1
                                 wnd.window[(xl,yl)].update(button_color=colorButn[count+1])
@@ -131,7 +147,7 @@ while True:  # Event Loop
                                 buildArr[xl][yl]=count+1+2 
                                 wnd.window[(xl,yl)].update(button_color=colorButn[count+1+2])
 
-                           
+                            #zapisanie wartosci do prostokata wyznaczonego przez wartosci
                             if xl==xr and yl==yr:
                                 break
                             elif yl==yr:
@@ -144,12 +160,12 @@ while True:  # Event Loop
                 else:
                     
                     x,y=func.selectQuad(values[value],c[0],c[1])
-
+                    #ominiecie wartosci 6,7 (drzewo i krzew)
                     if count+1<6:
-                        buildArr[xl][yl]=count+1
+                        buildArr[x][y]=count+1
                         wnd.window[(x,y)].update(button_color=colorButn[count+1])
                     else:
-                        buildArr[xl][yl]=count+1+2
+                        buildArr[x][y]=count+1+2
                         wnd.window[(x,y)].update(button_color=colorButn[count+1+2])
                    
                     
@@ -202,8 +218,10 @@ while True:  # Event Loop
             wnd.window[f'-COL2-'].update(visible=False)
             wnd.window[f'-COL3-'].update(visible=False)
             wnd.window[f'-COL4-'].update(visible=True)
+
             plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
             plt.savefig('square.png',transparent=True)
+
             wnd.window[f'-BUILDSQUARE-'].update('square.png')
             wnd.window.refresh()
 
@@ -224,16 +242,17 @@ while True:  # Event Loop
 
             print(option1,option2)
             buildArr,pickedTree=func.algorithm(buildArr,option1,option2)
+            
             plt.imshow(buildArr, interpolation='nearest', cmap=cmap, norm=norm)
             plt.savefig('square.png',transparent=True)
             wnd.window[f'-BUILDSQUARE-'].update('square.png')
-            wnd.window[f'-TREELIST-'].update(visible=True)
-            print(pickedTree)
-            for i in range(2,12):
-                if i not in pickedTree:
-                    wnd.window[f'-{i}t-'].update('')
-                    wnd.window[f'-{i}-'].update(visible=False)
+            
             wnd.window.refresh()
+            if 7 in buildArr:
+                hedge=True
+            else:
+                hedge=False
+            wnd.open_Window_Trees(pickedTree,hedge) 
     if event=='Save':
       wnd.open_new_window('Save',buildArr);
 

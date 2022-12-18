@@ -6,6 +6,7 @@ import PySimpleGUI as sg
 import functions as func
 import linecache
 import numpy as np
+import random
 
 title="GUI"
 fsize=10
@@ -40,15 +41,16 @@ obrazek= [[sg.Image(filename='backim.png')]]
 
 options=[
     
-    [sg.Text("Chosen Size",font = font_title,pad=(20,20))],
-    [sg.Text("test",font = font_title,key='-INSIZE-')]
+    sg.Text("Size: ",font = font_title,pad=(20,20)),
+    sg.Text("test",font = font_title,key='-INSIZE-')
     
     ]
 layout2 = [ 
-    [sg.Column(options,element_justification='c'),sg.VSeperator(),sg.Column([[sg.Image('square.png',key='-SQUARE-')]])]
+    [sg.Column([options,[sg.Image('square.png',key='-SQUARE-',pad=(0,0))]],element_justification='c')]
              
 ]
 buttonsLayout=[[sg.Button("    ", key=(j, i),pad=(1,1),visible=False,size=(2,1)) for i in range(num_buttons_i)] for j in range(num_buttons_j)]
+
 columnBtn=sg.Column(buttonsLayout,key='-COLIN1-',scrollable=True,size=(1980,800),justification='c')
 layout3=[
     [sg.Column([[
@@ -134,28 +136,6 @@ layout4=[
 ]
 
 
-layout5=[
-        [sg.Column(
-            [
-                [sg.Column(
-                    [[sg.Text("Options - Tree Density",font = font_title,pad=(20,0))],
-                    [sg.Listbox(choices, key='-OPTIONSDENSE-',size=(25, len(choices)),enable_events=True)]],pad=(5,0))
-                ],
-                [sg.Column(
-                    [[sg.Text("Options - Tree Variation",font = font_title,pad=(20,0))],
-                    [sg.Listbox(choices2, key='-OPTIONSVARIETY-', size=(25, len(choices2)),enable_events=True)]],pad=(5,0))
-                 ], 
-                 [sg.Button('Start building',font=font_btn)]
-            ],element_justification='c'),
-        sg.VSeperator(),
-        sg.Image('square.png',key='-BUILDSQUARE-'),
-        sg.VSeperator(),
-      
-       
-
-    ]
-   
-]
 
 layout=[
     [sg.Column([[sg.Button('New',font=font_menu,pad=(1,0),size=btn_size_menu),
@@ -168,7 +148,7 @@ layout=[
     [sg.Column(obrazek,key='-OBR-',element_justification='c',vertical_alignment='c',justification='c'), sg.Column(layout2, visible=False, key='-COL2-'), sg.Column(layout3, visible=False, key='-COL3-'), sg.Column(layout4, visible=False, key='-COL4-')]
 ]
 
-window=sg.Window(title, layout,no_titlebar=False,grab_anywhere=True,size=(900,600),resizable=True,finalize=True)
+window=sg.Window(title, layout,no_titlebar=False,size=(900,600),resizable=True,finalize=True)
 
 columnBtn.expand(True,True)
 
@@ -223,4 +203,66 @@ def open_new_window(typeWin,buildArr):
         
     window.close()
 
+    
 
+def open_Window_Trees(sizes,hedge):
+    folder=['Wierzba','Wisnia','KlonPospolity','KlonFrancuski','KlonPolny','Jarzab','Deren','Glog','Bukszpan','Kalina']
+    folderAll=[]
+    temp=0
+    textS=''
+    if 3 in sizes:
+        ran=random.randint(0, 1)
+        folderAll.insert(0,folder[ran])
+        temp+=1
+    if 4 in sizes:
+        ran=random.randint(1, 3)
+        folderAll.insert(0,folder[ran])
+        temp+=1
+    if 5 in sizes:
+        ran=random.randint(1, 5)
+        folderAll.insert(0,folder[ran])
+        temp+=1
+    if 6 in sizes:
+        ran=random.choice([3,5,6])
+        folderAll.insert(0,folder[ran])
+        temp+=1
+    if 8 in sizes:
+        ran=random.randint(5,7)
+        folderAll.insert(0,folder[ran])
+        temp+=1
+    if 9 in sizes or 10 in sizes or 7 in sizes:
+        ran=random.randint(5,6)
+        folderAll.insert(0,folder[ran])
+        temp+=1
+    if hedge==True:
+        ran=random.randint(8,9)
+        folderAll.insert(0,folder[ran])
+        temp+=1
+
+    if temp>0:
+        folderAll = list(dict.fromkeys(folderAll))
+
+    for v in sizes:
+        if v!=0:
+            textS+= str(v)+" "
+    if temp>0:
+        folderAll = list(dict.fromkeys(folderAll))
+    textLayout=[[sg.Image(f'Trees\{value}\im.png'),sg.Text("",key=f'-TEXTTREE{i}-',pad=(1,1),visible=True)] for i,value in enumerate(folderAll)]
+    layout=[[sg.Text("Hedges and trees of sizes: "+textS+"m")],textLayout,[sg.Button("Load Tree Information")]]
+    window = sg.Window("ran",layout,grab_anywhere=True, element_justification='c')
+   
+    
+    while True:
+        event, values = window.read()
+        for i,value in enumerate(folderAll):
+            direc=r'Trees\\'+value+r'\\text.txt'
+            f=open(direc,'r')
+            text=f.readline()
+            f.close()
+            window[f'-TEXTTREE{i}-'].update(text)
+            window.refresh()
+            
+        if  event == sg.WIN_CLOSED:
+            break
+
+    window.close()
