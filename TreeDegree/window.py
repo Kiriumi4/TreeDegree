@@ -7,6 +7,7 @@ import functions as func
 import linecache
 import numpy as np
 import random
+import os
 
 title="GUI"
 fsize=10
@@ -168,6 +169,7 @@ def open_new_window(typeWin,buildArr):
         if typeWin=="Save" and event == '-SAVEBTN-':
                  if values['-SAVETEXT-']=='':
                      sg.Popup('Cannot save file without name')
+                 
                  else:
                     f=open(values['-SAVETEXT-'],'w')
                     strArr=str(buildArr).replace('\n','')
@@ -180,7 +182,10 @@ def open_new_window(typeWin,buildArr):
         if typeWin=="Open" and event == '-SAVEBTN-':
                  if values['-SAVETEXT-']=='':
                      sg.Popup('Cannot open file')
-                 else:
+                 elif not os.path.exists(values['-SAVETEXT-']):
+                     sg.Popup('No file of chosen name')
+                 elif os.path.exists(values['-SAVETEXT-']):
+                    print(os.path.exists(values['-SAVETEXT-']))
                     f=open(values['-SAVETEXT-'],'r')
                     arr=np.loadtxt(values['-SAVETEXT-'],dtype=float)
                     f.close()
@@ -190,6 +195,8 @@ def open_new_window(typeWin,buildArr):
                  
                  if values['-SAVETEXT-']=='':
                      sg.Popup('No size given')
+                 elif not " x " in values['-SAVETEXT-']:
+                     sg.Popup('Wrong size')
                  else:
                     c=[int(i) for i in values['-SAVETEXT-'].split() if i.isdigit()]
                     arr=np.zeros((c[0],c[1]))
@@ -245,11 +252,10 @@ def open_Window_Trees(sizes,hedge):
     for v in sizes:
         if v!=0:
             textS+= str(v)+" "
-    if temp>0:
-        folderAll = list(dict.fromkeys(folderAll))
+ 
     textLayout=[[sg.Image(f'Trees\{value}\im.png'),sg.Text("",key=f'-TEXTTREE{i}-',pad=(1,1),visible=True)] for i,value in enumerate(folderAll)]
     layout=[[sg.Text("Hedges and trees of sizes: "+textS+"m")],textLayout,[sg.Button("Load Tree Information")]]
-    window = sg.Window("ran",layout,grab_anywhere=True, element_justification='c')
+    window = sg.Window("Tree",layout,grab_anywhere=True, element_justification='c')
    
     
     while True:

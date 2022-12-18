@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="functions.py" />
-    <Compile Include="moduł1.py" />
     <Compile Include="window.py" />
     <Compile Include="TreeDegree.py" />
   </ItemGroup>
